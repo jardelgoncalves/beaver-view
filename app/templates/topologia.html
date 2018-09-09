@@ -1,0 +1,99 @@
+{% extends 'base.html'%}
+
+{% block content %}
+
+
+<style>
+    #mynetwork{
+    border: 2px solid black;
+    border-radius: 5px;
+    height:500px;
+    background-color: #efeded;
+}
+</style>
+
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <h3><span class="brown-text">Topologia da rede</span></h3>
+            <div class="" id="mynetwork"></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var color = 'gray';
+    var len = undefined;
+
+    var nodes = [{
+            id: 1,
+            label: "s1",
+            group: 0
+        },
+        {
+            id: 2,
+            label: "s2",
+            group: 0
+        },
+        {
+            id: 3,
+            label: "s3",
+            group: 0
+        },
+        {
+            id: 4,
+            label: "s4",
+            group: 0
+        },
+        {
+            id: 5,
+            label: "s5",
+            group: 0
+        }
+    ];
+    var edges = [{
+            from: 1,
+            to: 2, shadow:{color:'rgb(0,255,0)'}
+        },
+        {
+            from: 2,
+            to: 3, shadow:{color:'rgb(0,255,0)'}
+        },
+        {
+            from: 4,
+            to: 3, shadow:{color:'rgb(0,255,0)'}
+        },
+        {
+            from: 5,
+            to: 3, shadow:{color:'rgb(0,255,0)'}
+        }
+    ]
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {
+        nodes: {
+            shape: 'dot',
+            size: 30,
+            font: {
+                size: 32,
+                color: '#000'
+            },
+            borderWidth: 2,
+            shadow:true
+        },
+        edges: {
+            width: 2
+        }
+    };
+    network = new vis.Network(container, data, options);
+    
+</script>
+
+{% endblock %}

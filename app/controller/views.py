@@ -35,8 +35,16 @@ def dashboard():
     else:
         flash("Restricted area for registered users.")
         return redirect( url_for("index") )
-        
-    
+
+
+@app.route("/topologia")
+def topologia():
+    if current_user.is_authenticated:
+        return render_template("topologia.html")
+    else:
+        flash("Restricted area for registered users.")
+        return redirect( url_for("index") )
+
 @app.route("/logout")
 def logout():
     logout_user()
