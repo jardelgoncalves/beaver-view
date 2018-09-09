@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Beaver D-Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/materialize.min.css') }}" media="screen,projection" />
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/logo.png')}}" />
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-wrapper brown">
+            <a href="" class="brand-logo center">Beaver D-Tool</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="section">
+            <div class="row">
+
+                <!-- Mensagens de erros -->
+                {% if form.errors.email %}
+                <div class="card-panel red lighten-4 col s6 offset-s3">
+                    <ul>
+                        {% for e in form.errors.email %}
+                        <li><span class="red-text text-darken-4">{{e}}</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <!-- Fim das mensagens de erros -->
+
+                <div class="card-panel yellow lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="yellow-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+                </div>
+
+                <!-- Card do formulario de login -->
+                <div class="card-panel col s6 offset-s3 center" style="margin-top:70px;">
+                    <br>
+                    <img class="responsive-img" width="130" src="{{ url_for('static', filename='img/logo.png')}}">
+                    <h4><span class="brown-text">Login</span></h4>
+                    <form class="col s12" method="POST">
+                        {{ form.csrf_token }}
+                        <div class="row">
+                            <div class="input-field col s12">
+                                {{ form.email }}
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                {{ form.password }}
+                                <label for="password">Password</label>
+                            </div>
+                        </div>
+
+
+                        <button class="btn waves-effect waves-light brown" type="submit">Acessar
+                            <i class="material-icons right">send</i>
+                        </button>
+
+                        <br><br>
+                    </form>
+                </div>
+                <!-- Fim do card do formulario de login -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="page-footer brown">
+        <div class="footer-copyright">
+            <div class="container">
+                © 2018 Beaver D-Tool
+                <a class="grey-text text-lighten-4 right" href="https://github.com/JardelGoncalves/Beaver-Tool">Github</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.min.js')}}"></script>
+</body>
+
+</html>
