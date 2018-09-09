@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from app import app, db, login_manager
 from flask import render_template, url_for, flash, redirect
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 
 from app.models.tables import User
 from app.models.forms import LoginForm
@@ -13,6 +13,8 @@ def load_user(id):
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+    
+    logout_user()
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -28,5 +30,9 @@ def index():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    if current_user.is_authenticated:
+        return render_template("dashboard.html")
+    else:
+        flash("Restricted area for registered users.")
+        return redirect( url_for("index") )
     
