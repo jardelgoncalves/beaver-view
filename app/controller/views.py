@@ -22,7 +22,6 @@ def index():
             return redirect( url_for("dashboard") )
         else:
             flash("Invalid login")
-            print("nao logou")
 
     return render_template("index.html", form=form)
     
