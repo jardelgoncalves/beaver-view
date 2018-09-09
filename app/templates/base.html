@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Beaver D-Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/materialize.min.css') }}" media="screen,projection" />
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/logo.png')}}" />
+</head>
+
+<body>
+
+
+    <nav>
+        <div class="nav-wrapper brown">
+            <a href="#" class="brand-logo">Beaver D-Tool</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="#">Topologia</a></li>
+                <li><a href="#">Dispositivos</a></li>
+                <li><a href="#">Firewall</a></li>
+                <li><a href="#">QoS</a></li>
+                <li><a href="#">Configurações</a></li>
+                <li><a href="#sair">Sair</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="page-footer brown">
+        <div class="footer-copyright">
+            <div class="container">
+                © 2018 Beaver D-Tool
+                <a class="grey-text text-lighten-4 right" href="https://github.com/JardelGoncalves/Beaver-Tool">Github</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.min.js')}}"></script>
+</body>
+
+</html>

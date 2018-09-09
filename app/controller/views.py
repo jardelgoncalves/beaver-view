@@ -24,4 +24,9 @@ def index():
             flash("Invalid login")
 
     return render_template("index.html", form=form)
+
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
     

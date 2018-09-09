@@ -1,6 +1,7 @@
 
 # -*- coding: utf-8 -*-
 DEBUG = True
+THREADED = True
 
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://beaver_user:JNFBEEzXp397@localhost/beaver_db'
 
