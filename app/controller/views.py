@@ -13,7 +13,7 @@ def load_user(id):
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    
+
     logout_user()
     form = LoginForm()
 
@@ -35,4 +35,9 @@ def dashboard():
     else:
         flash("Restricted area for registered users.")
         return redirect( url_for("index") )
+        
     
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect( url_for("index") )

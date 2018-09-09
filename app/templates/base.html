@@ -19,14 +19,14 @@
 
     <nav>
         <div class="nav-wrapper brown">
-            <a href="#" class="brand-logo">Beaver D-Tool</a>
+            <a href="{{ url_for('dashboard')}}" class="brand-logo">Beaver D-Tool</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="#">Topologia</a></li>
                 <li><a href="#">Dispositivos</a></li>
                 <li><a href="#">Firewall</a></li>
                 <li><a href="#">QoS</a></li>
                 <li><a href="#">Configurações</a></li>
-                <li><a href="#sair">Sair</a></li>
+                <li><a href="{{ url_for('logout')}}">Sair</a></li>
             </ul>
         </div>
     </nav>
