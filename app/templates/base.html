@@ -24,7 +24,7 @@
             <a href="{{ url_for('dashboard')}}" class="brand-logo">Beaver D-Tool</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="{{ url_for('topologia')}}">Topologia</a></li>
-                <li><a href="#">Dispositivos</a></li>
+                <li><a href="{{ url_for('dispositivos')}}">Dispositivos</a></li>
                 <li><a href="#">Firewall</a></li>
                 <li><a href="#">QoS</a></li>
                 <li><a href="#">Configurações</a></li>
@@ -36,7 +36,7 @@
     {% block content %}
     {% endblock %}
 
-    <footer class="page-footer brown">
+    <footer class="page-footer brown" style="margin-top:50px;">
         <div class="footer-copyright">
             <div class="container">
                 © 2018 Beaver D-Tool

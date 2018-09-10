@@ -45,6 +45,15 @@ def topologia():
         flash("Restricted area for registered users.")
         return redirect( url_for("index") )
 
+
+@app.route("/dispositivos")
+def dispositivos():
+    if current_user.is_authenticated:
+        return render_template("dispositivos.html")
+    else:
+        flash("Restricted area for registered users.")
+        return redirect( url_for("index") )
+
 @app.route("/logout")
 def logout():
     logout_user()
