@@ -3,7 +3,7 @@ from app import app, db, login_manager
 from flask import render_template, url_for, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 
-from app.models.tables import User, TipoDispositivo
+from app.models.tables import User, DeviceTypes
 from app.models.forms import LoginForm, TipoForm
 
 

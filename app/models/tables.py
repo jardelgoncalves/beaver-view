@@ -8,13 +8,11 @@ class User(db.Model):
 
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     name = db.Column('name', db.String(50))
-    username = db.Column('username', db.String(50), unique=True)
     email = db.Column('email',db.String(100), unique=True)
     password = db.Column('password', db.String(100))
 
-    def __init__(self, name, username, email, password):
+    def __init__(self, name, email, password):
         self.name = name
-        self.username = username
         self.email = email
         self.password = password
 
@@ -36,9 +34,9 @@ class User(db.Model):
     def __repr__(self):
         return "<User %r>" % self.username
 
-class TipoDispositivo(db.Model):
+class DeviceTypes(db.Model):
 
-    __tablename__ = "tipos_dispositivo"
+    __tablename__ = "device_types"
 
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     name = db.Column('name', db.String(50))
