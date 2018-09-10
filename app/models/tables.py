@@ -35,3 +35,21 @@ class User(db.Model):
 
     def __repr__(self):
         return "<User %r>" % self.username
+
+class TipoDispositivo(db.Model):
+
+    __tablename__ = "tipos_dispositivo"
+
+    id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column('name', db.String(50))
+    filename = db.Column('filename', db.String(50), unique=True)
+
+    def __init__(self, name, filename):
+        self.name = name
+        self.filename = filename
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def __repr__(self):
+        return "<User %r>" % self.name

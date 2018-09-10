@@ -3,8 +3,8 @@ from app import app, db, login_manager
 from flask import render_template, url_for, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 
-from app.models.tables import User
-from app.models.forms import LoginForm
+from app.models.tables import User, TipoDispositivo
+from app.models.forms import LoginForm, TipoForm
 
 
 @login_manager.user_loader
@@ -53,6 +53,17 @@ def dispositivos():
     else:
         flash("Restricted area for registered users.")
         return redirect( url_for("index") )
+
+
+@app.route("/dispositivos/adicionar_tipo")
+def adicionar_tipo():
+    if current_user.is_authenticated:
+        form = TipoForm()
+        if form.validate_on_submit():
+            pass
+        return render_template("dispositivos/add_tipo.html", form=form)
+
+
 
 @app.route("/logout")
 def logout():

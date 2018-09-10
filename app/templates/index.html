@@ -38,6 +38,7 @@
                 {% endif %}
                 <!-- Fim das mensagens de erros -->
 
+                <!-- Inicio de mensagens de atenção -->
                 <div class="card-panel yellow lighten-4 col s6 offset-s3">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
@@ -49,6 +50,7 @@
                 {% endif %}
                 {% endwith %}
                 </div>
+                <!-- Fim de mensagens de atenção -->
 
                 <!-- Card do formulario de login -->
                 <div class="card-panel col s6 offset-s3 center" style="margin-top:70px;">

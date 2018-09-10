@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Sub menu -->
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li><a href="#">Adicionar dispositivo</a></li>
+            <li class="active"><a href="#">Adicionar tipo</a></li>
+            <li><a href="#">Remover dispositivo</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Fim sub menu -->
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+
+            <!-- Mensagens de erros -->
+            {% if form.errors.photo %}
+            <div class="card-panel red lighten-4 col s6 offset-s3">
+                <ul>
+                    {% for e in form.errors.photo %}
+                    <li><span class="red-text text-darken-4">{{e}}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <!-- Fim das mensagens de erros -->
+
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+                </div>
+                <!-- Fim de mensagens de atenção -->
+
+            <!-- Card do formulario de login -->
+            <div class="col s8 offset-s2" style="margin-top:70px;">
+                <h4><span class="brown-text">Adicionar tipo de dispositivo</span></h4>
+                <hr>
+                <br>
+                <form class="col s12" method="POST">
+                    {{ form.csrf_token }}
+                    <div class="row">
+                        <div class="input-field col s12">
+                            {{ form.name }}
+                            <label for="name">Nome</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12 file-field input-field">
+                            <div class="btn brown">
+                                <span>Foto</span>
+                                {{form.photo}}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <button class="btn waves-effect waves-light blue" type="submit">Adicionar
+                        <i class="material-icons right">add</i>
+                    </button>
+
+                    <br><br>
+                </form>
+            </div>
+            <!-- Fim do card do formulario de login -->
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
