@@ -49,7 +49,7 @@ def topologia():
 @app.route("/dispositivos")
 def dispositivos():
     if current_user.is_authenticated:
-        return render_template("dispositivos.html")
+        return render_template("dispositivos/index.html")
     else:
         flash("Restricted area for registered users.")
         return redirect( url_for("index") )
