@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li class="active"><a href="">Adicionar dispositivo</a></li>
+            <li><a href="{{ url_for('adicionar_tipo')}}">Adicionar tipo</a></li>
+            <li><a href="#">Remover dispositivo</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Fim sub menu -->
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <!-- Fim das mensagens de erros -->
+
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
+
+            <!-- Card do formulario de login -->
+            <div class="col s8 offset-s2" style="margin-top:70px;">
+                <h4><span class="brown-text">Adicionar dispositivo</span></h4>
+                <hr>
+                <br>
+                <form class="col s12" method="POST">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="nome" type="text" class="validate">
+                            <label for="nome">Nome do dispositivo</label>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <label>Tipo de dispositivo</label>
+                        <select class="browser-default">
+                            <option value="" disabled selected>Choose your option</option>
+                            <option value="1">Option 1</option>
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s5">
+                            <input id="interfaces" type="text" class="validate">
+                            <label for="interfaces">Interfaces</label>
+                        </div>
+                        <div class="col s2">
+                            <a class="btn-floating btn-large waves-effect waves-light green">
+                                <i class="material-icons">add</i>
+                            </a>
+                        </div>
+                        <div class="input-field col s5">
+                            <textarea id="textarea1" class="materialize-textarea" disabled></textarea>
+                            <label for="textarea1">Interfaces adicionadas</label>
+                        </div>
+                    </div>
+
+                    <button class="btn waves-effect waves-light blue" type="submit">Adicionar
+                        <i class="material-icons right">add</i>
+                    </button>
+
+                    <br><br>
+                </form>
+            </div>
+            <!-- Fim do card do formulario de login -->
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

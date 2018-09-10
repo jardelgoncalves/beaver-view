@@ -62,7 +62,18 @@ def adicionar_tipo():
         if form.validate_on_submit():
             pass
         return render_template("dispositivos/add_tipo.html", form=form)
+    else:
+        flash("Restricted area for registered users.")
+        return redirect( url_for("index") )
 
+
+@app.route("/dispositivos/adicionar_dispositivo")
+def adicionar_dispositivo():
+    if current_user.is_authenticated:
+        return render_template("dispositivos/add_dispositivo.html")
+    else:
+        flash("Restricted area for registered users.")
+        return redirect( url_for("index") )
 
 
 @app.route("/logout")
