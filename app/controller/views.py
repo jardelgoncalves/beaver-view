@@ -76,6 +76,17 @@ def adicionar_dispositivo():
         return redirect( url_for("index") )
 
 
+@app.route("/dispositivos/remover_dispositivo")
+def remover_dispositivo():
+    if current_user.is_authenticated:
+        return render_template("dispositivos/rm_dispositivo.html")
+    else:
+        flash("Restricted area for registered users.")
+        return redirect( url_for("index") )
+
+
+
+
 @app.route("/logout")
 def logout():
     logout_user()
