@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
+import os
+
 from app import app, db, login_manager
 from flask import render_template, url_for, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 
-from app.models.tables import User, DeviceTypes
+from app.models.tables import User, DeviceTypes, Device, Link
 from app.models.forms import LoginForm, TipoForm
+from werkzeug.utils import secure_filename
+
+from time import ctime
+from hashlib import sha224
 
 
 @login_manager.user_loader
 def load_user(id):
     return User.query.filter_by(id=id).first()
+
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -21,7 +28,7 @@ def index():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.password == form.password.data:
             login_user(user)
-            return redirect( url_for("dashboard") )
+            return redirect(url_for("dashboard"))
         else:
             flash("Invalid login")
 
@@ -34,16 +41,28 @@ def dashboard():
         return render_template("dashboard.html")
     else:
         flash("Restricted area for registered users.")
-        return redirect( url_for("index") )
+        return redirect(url_for("index"))
 
 
 @app.route("/topologia")
 def topologia():
     if current_user.is_authenticated:
-        return render_template("topologia.html")
+        d = Device.query.all()
+        nodes = []
+        for device in d:
+            nodes.append({"id":device.dpid, "label":device.dpid, "group":0})
+
+        edges = []
+        l = Link.query.all()
+        for device in l:
+            edges.append({"from":device.dpid_src, "to":device.dpid_dst})
+
+        
+        print edges, nodes
+        return render_template("topologia.html", nodes=nodes, edges=edges)
     else:
         flash("Restricted area for registered users.")
-        return redirect( url_for("index") )
+        return redirect(url_for("index"))
 
 
 @app.route("/dispositivos")
@@ -52,19 +71,32 @@ def dispositivos():
         return render_template("dispositivos/index.html")
     else:
         flash("Restricted area for registered users.")
-        return redirect( url_for("index") )
+        return redirect(url_for("index"))
 
 
-@app.route("/dispositivos/adicionar_tipo")
+@app.route("/dispositivos/adicionar_tipo", methods=['GET', 'POST'])
 def adicionar_tipo():
     if current_user.is_authenticated:
         form = TipoForm()
         if form.validate_on_submit():
-            pass
+            photo = form.photo.data
+            name = form.name.data
+            hsh = sha224(ctime()).hexdigest()
+            filename = "%s.png" %hsh
+
+            td = DeviceTypes(name, filename)
+            db.session.add(td)
+            db.session.commit()
+
+            photo.save(os.path.join(
+                os.getcwd(), 'app/static/img/components', filename
+            ))
+            flash("added successfully")
+
         return render_template("dispositivos/add_tipo.html", form=form)
     else:
         flash("Restricted area for registered users.")
-        return redirect( url_for("index") )
+        return redirect(url_for("index"))
 
 
 @app.route("/dispositivos/adicionar_dispositivo")
@@ -73,7 +105,7 @@ def adicionar_dispositivo():
         return render_template("dispositivos/add_dispositivo.html")
     else:
         flash("Restricted area for registered users.")
-        return redirect( url_for("index") )
+        return redirect(url_for("index"))
 
 
 @app.route("/dispositivos/remover_dispositivo")
@@ -82,12 +114,10 @@ def remover_dispositivo():
         return render_template("dispositivos/rm_dispositivo.html")
     else:
         flash("Restricted area for registered users.")
-        return redirect( url_for("index") )
-
-
+        return redirect(url_for("index"))
 
 
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect( url_for("index") )
+    return redirect(url_for("index"))

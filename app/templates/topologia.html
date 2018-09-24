@@ -27,48 +27,24 @@
     var color = 'gray';
     var len = undefined;
 
-    var nodes = [{
-            id: 1,
-            label: "s1",
+    var nodes = [
+        {% for node in nodes %}
+        {
+            id: "{{node['id']}}",
+            label: "{{node['label']}}",
             group: 0
         },
+        {% endfor %}
+    ]
+    var edges = [
+        {% for edge in edges %}
         {
-            id: 2,
-            label: "s2",
-            group: 0
+            from: "{{edge['from']}}",
+            to: "{{edge['to']}}", 
+            shadow:{color:'rgb(0,255,0)'}
         },
-        {
-            id: 3,
-            label: "s3",
-            group: 0
-        },
-        {
-            id: 4,
-            label: "s4",
-            group: 0
-        },
-        {
-            id: 5,
-            label: "s5",
-            group: 0
-        }
-    ];
-    var edges = [{
-            from: 1,
-            to: 2, shadow:{color:'rgb(0,255,0)'}
-        },
-        {
-            from: 2,
-            to: 3, shadow:{color:'rgb(0,255,0)'}
-        },
-        {
-            from: 4,
-            to: 3, shadow:{color:'rgb(0,255,0)'}
-        },
-        {
-            from: 5,
-            to: 3, shadow:{color:'rgb(0,255,0)'}
-        }
+        {% endfor %}
+        
     ]
 
     // create a network
@@ -82,7 +58,7 @@
             shape: 'dot',
             size: 30,
             font: {
-                size: 32,
+                size: 15,
                 color: '#000'
             },
             borderWidth: 2,
