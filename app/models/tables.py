@@ -81,3 +81,46 @@ class Link(db.Model):
 
     def get_id(self):
         return unicode(self.id)
+
+
+class Resource(db.Model):
+    __tablename__ = "resources"
+
+    id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column('name', db.String(50))
+    url = db.Column('url', db.String(200))
+    pid = db.Column('pid', db.Integer, unique=True)
+
+    def __init__(self, name,url,pid):
+        self.name = name
+        self.url = url
+        self.pid = pid
+
+    def get_id(self):
+        return unicode(self.id)
+
+
+class HostDocker(db.Model):
+    __tablename__ = "hosts_docker"
+
+    id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column('name', db.String(50))
+    user = db.Column('user', db.String(50))
+    password = db.Column('password', db.String(100))
+    ip = db.Column('ip', db.String(20))
+    type_device_id = db.Column('type_device_id', db.String(80))
+    bridge_docker = db.Column('bridge_docker', db.String(80))
+
+    def __init__(self, name,user,password,ip, type_device_id, bridge_docker):
+        self.name = name
+        self.user = user
+        self.password = password
+        self.ip = ip
+        self.type_device_id = type_device_id
+        self.bridge_docker = bridge_docker
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def __repr__(self):
+        return "<Host Docker %r>" % self.name

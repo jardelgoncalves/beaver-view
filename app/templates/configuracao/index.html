@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li><a href="{{ url_for('add_recursos')}}">Adicionar Recurso</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Fim sub menu -->
+
+
+<!-- Inicio de container -->
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
+            <!-- Inicio da div dispositivos -->
+            <div class="col s10 offset-s1">
+                <h3><span class="brown-text">Configurações</span></h3>
+                <hr>
+
+                <!-- inicio da div da conta do usuario  -->
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title center brown-text"><strong>URL Recursos</strong></span>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Recurso</th>
+                                        <th>URL</th>
+                                        <th>PID</th>
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for resource in resources %}
+                                    <tr>
+                                        <td>{{resource.name}}</td>
+                                        <td>{{resource.url}}</td>
+                                        <td>{{resource.pid}}</td>
+                                        <td>
+                                            <a href="{{ url_for('edit_recurso',id = resource.id) }}" class="waves-effect waves-light btn yellow right">
+                                                <i class="material-icons">create</i>
+                                            </a>
+                                            <a href="{{ url_for('apagar_recurso',id = resource.id) }}" class="waves-effect waves-light btn red right">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- fim da div da conta do usuario  -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fim de container -->
+{% endblock %}

@@ -4,7 +4,7 @@
 <nav>
     <div class="nav-wrapper brown darken-1">
         <ul class="left hide-on-med-and-down">
-            <li><a href="{{ url_for('adicionar_dispositivo')}}">Adicionar dispositivo</a></li>
+            <li><a href="{{ url_for('adicionar_dispositivo')}}">Adicionar Host Docker</a></li>
             <li><a href="{{ url_for('adicionar_tipo')}}">Adicionar tipo</a></li>
             <li class="active"><a href="">Remover dispositivo</a></li>
         </ul>
@@ -15,74 +15,44 @@
 <div class="container">
     <div class="section">
         <div class="row">
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
             <!-- Inicio da div dispositivos -->
-            <div class="col s10 offset-s1">
+            <div class="col s12 offset-s1">
                 <h3><span class="brown-text">Remover dispositivo</span></h3>
                 <hr>
 
-                <!-- Search -->
-                <form class="col s12">
-                    <div class="row">
-                        <div class="input-field col s6 offset-s2">
-                            <input placeholder="Pesquisar" id="first_name" type="text" class="validate">
-                        </div>
-                        <div class="input-field col s2">
-                            <a class="btn-floating btn-large waves-effect waves-light blue">
-                                <i class="material-icons">search</i>
-                            </a>
-                        </div>
-                    </div>
-                    <br><br>
-                </form>
-                <!-- Fim Search -->
-
-
                 <!-- inicio da div do dispositivo  -->
+                {% for device in devices %}
                 <div class="col s4">
                     <div class="card">
                         <div class="card-image">
-                            <img width="512" src="{{url_for('static', filename='img/components/switch-icon.png')}}">
+                            {% for tp in types %}
+                            {% if tp.id == device.device_type_id %}
+                            <img width="512" src="{{url_for('static', filename='img/components/' ~ tp.filename)}}">
+                            {% endif %}
+                            {% endfor %}
                         </div>
                         <div class="card-content">
-                            <span class="card-title center brown-text"><strong>s1</strong></span>
+                            <span class="card-title center brown-text"><strong>{{device.mac}}</strong></span>
                         </div>
                         <div class="card-action center">
-                            <a href="#"><span class="red-text">Remover</span></a>
+                            <a href="{{ url_for('apagar_dispositivo',id = device.id) }}"><span class="red-text">Remover</span></a>
                         </div>
                     </div>
                 </div>
-                <!-- fim da div do dispositivo  -->
-
-                <!-- inicio da div do dispositivo  -->
-                <div class="col s4">
-                    <div class="card">
-                        <div class="card-image">
-                            <img width="512" src="{{url_for('static', filename='img/components/switch-icon.png')}}">
-                        </div>
-                        <div class="card-content">
-                            <span class="card-title center brown-text"><strong>s2</strong></span>
-                        </div>
-                        <div class="card-action center">
-                            <a href="#"><span class="red-text">Remover</span></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- fim da div do dispositivo  -->
-
-                <!-- inicio da div do dispositivo  -->
-                <div class="col s4">
-                    <div class="card">
-                        <div class="card-image">
-                            <img width="512" src="{{url_for('static', filename='img/components/switch-icon.png')}}">
-                        </div>
-                        <div class="card-content">
-                            <span class="card-title center brown-text"><strong>s3</strong></span>
-                        </div>
-                        <div class="card-action center">
-                            <a href="#"><span class="red-text">Remover</span></a>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
                 <!-- fim da div do dispositivo  -->
             </div>
             <!-- Fim da div dispositivos -->

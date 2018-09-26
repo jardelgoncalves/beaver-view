@@ -41,7 +41,8 @@
         {
             from: "{{edge['from']}}",
             to: "{{edge['to']}}", 
-            shadow:{color:'rgb(0,255,0)'}
+            shadow:{color:'rgb(0,255,0)'},
+            length: 300
         },
         {% endfor %}
         
@@ -58,7 +59,7 @@
             shape: 'dot',
             size: 30,
             font: {
-                size: 15,
+                size: 20,
                 color: '#000'
             },
             borderWidth: 2,

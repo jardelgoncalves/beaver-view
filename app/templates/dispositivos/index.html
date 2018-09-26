@@ -5,9 +5,9 @@
 <nav>
     <div class="nav-wrapper brown darken-1">
         <ul class="left hide-on-med-and-down">
-            <li><a href="{{ url_for('adicionar_dispositivo')}}">Adicionar dispositivo</a></li>
+            <li><a href="{{ url_for('adicionar_dispositivo')}}">Adicionar Host Docker</a></li>
             <li><a href="{{ url_for('adicionar_tipo')}}">Adicionar tipo</a></li>
-            <li><a href="#">Remover dispositivo</a></li>
+            <li><a href="{{ url_for('remover_dispositivo')}}">Remover dispositivo</a></li>
         </ul>
     </div>
 </nav>
@@ -18,67 +18,31 @@
     <div class="section">
         <div class="row">
             <!-- Inicio da div dispositivos -->
-            <div class="col s10 offset-s1">
+            <div class="col s12">
                 <h3><span class="brown-text">Dispositivos</span></h3>
                 <hr>
-                <!-- inicio da div do dispositivo  -->
-                <div class="col s4">
-                    <div class="card">
-                        <div class="card-image">
-                            <img width="512" src="{{url_for('static', filename='img/components/switch-icon.png')}}">
-                        </div>
-                        <div class="card-content">
-                            <span class="card-title center brown-text"><strong>s1</strong></span>
-                            <p>
-                                <strong>Status: </strong><span class="green-text">UP</span> <br>
-                                <strong>Perda de pacotes: </strong><span class="brown-text">20%</span> <br>
-                            </p>
-                        </div>
-                        <div class="card-action center">
-                            <a href="#"><span class="blue-text">Gráficos</span></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- fim da div do dispositivo  -->
 
                 <!-- inicio da div do dispositivo  -->
+                {% for device in devices %}
                 <div class="col s4">
                     <div class="card">
                         <div class="card-image">
-                            <img width="512" src="{{url_for('static', filename='img/components/switch-icon.png')}}">
+                            {% for tp in types %}
+                                {% if tp.id == device.device_type_id %}
+                                    <img width="512" src="{{url_for('static', filename='img/components/' ~ tp.filename)}}">
+                                {% endif %}
+                            {% endfor %}
                         </div>
                         <div class="card-content">
-                            <span class="card-title center brown-text"><strong>s2</strong></span>
+                            <span class="card-title center brown-text"><strong>{{device.mac}}</strong></span>
                             <p>
                                 <strong>Status: </strong><span class="green-text">UP</span> <br>
                                 <strong>Perda de pacotes: </strong><span class="brown-text">20%</span> <br>
                             </p>
                         </div>
-                        <div class="card-action center">
-                            <a href="#"><span class="blue-text">Gráficos</span></a>
-                        </div>
                     </div>
                 </div>
-                <!-- fim da div do dispositivo  -->
-
-                <!-- inicio da div do dispositivo  -->
-                <div class="col s4">
-                    <div class="card">
-                        <div class="card-image">
-                            <img width="512" src="{{url_for('static', filename='img/components/switch-icon.png')}}">
-                        </div>
-                        <div class="card-content">
-                            <span class="card-title center brown-text"><strong>s3</strong></span>
-                            <p>
-                                <strong>Status: </strong><span class="green-text">UP</span> <br>
-                                <strong>Perda de pacotes: </strong><span class="brown-text">20%</span> <br>
-                            </p>
-                        </div>
-                        <div class="card-action center">
-                            <a href="#"><span class="blue-text">Gráficos</span></a>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
                 <!-- fim da div do dispositivo  -->
             </div>
             <!-- Fim da div dispositivos -->
