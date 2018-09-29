@@ -108,15 +108,15 @@ class HostDocker(db.Model):
     user = db.Column('user', db.String(50))
     password = db.Column('password', db.String(100))
     ip = db.Column('ip', db.String(20))
-    type_device_id = db.Column('type_device_id', db.String(80))
+    device_type_id = db.Column('device_type_id', db.Integer)
     bridge_docker = db.Column('bridge_docker', db.String(80))
 
-    def __init__(self, name,user,password,ip, type_device_id, bridge_docker):
+    def __init__(self, name,user,password,ip, device_type_id, bridge_docker):
         self.name = name
         self.user = user
         self.password = password
         self.ip = ip
-        self.type_device_id = type_device_id
+        self.device_type_id = device_type_id
         self.bridge_docker = bridge_docker
 
     def get_id(self):
