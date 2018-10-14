@@ -59,11 +59,13 @@ class Device(db.Model):
     device_type_id = db.Column('device_type_id', db.Integer)
     dpid = db.Column('dpid', db.String(50), unique=True)
     mac = db.Column('mac', db.String(50), unique=True)
+    interface = db.Column('interface', db.String(50))
 
-    def __init__(self, device_type_id, dpid, mac):
+    def __init__(self, device_type_id, dpid, mac, interface):
         self.device_type_id = device_type_id
         self.dpid = dpid
         self.mac = mac
+        self.interface = interface
 
     def get_id(self):
         return unicode(self.id)
@@ -74,7 +76,6 @@ class Device(db.Model):
 
 class Link(db.Model):
     __tablename__ = "links"
-
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     dpid_src = db.Column('dpid_src', db.String(50))
     dpid_dst = db.Column('dpid_dst', db.String(50))

@@ -25,8 +25,8 @@
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="{{ url_for('topologia')}}">Topologia</a></li>
                 <li><a href="{{ url_for('dispositivos')}}">Dispositivos</a></li>
-                <li><a href="#">Firewall</a></li>
-                <li><a href="#">QoS</a></li>
+                <li><a href="{{ url_for('firewall')}}">Firewall</a></li>
+                <li><a href="{{ url_for('qos')}}">QoS</a></li>
                 <li><a href="{{ url_for('configuracao')}}">Configurações</a></li>
                 <li><a href="{{ url_for('logout')}}">Sair</a></li>
             </ul>
@@ -44,8 +44,8 @@
             </div>
         </div>
     </footer>
-    
-    <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/materialize.min.js')}}"></script>
 </body>
 
 </html>

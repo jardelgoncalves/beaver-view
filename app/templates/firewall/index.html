@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li><a href="{{ url_for('add_regras_firewall')}}">Adicionar Regras</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Fim sub menu -->
+
+
+<!-- Inicio de container -->
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
+            <!-- Inicio da div dispositivos -->
+            <div class="col s10 offset-s1">
+                <h3><span class="brown-text">Firewall</span></h3>
+                <hr>
+
+                <!-- inicio da div da conta do usuario  -->
+                <div class="col s12">
+                    {% if enable == True %}
+
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title center brown-text"><strong>Regras</strong></span>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>DPID</th>
+                                        <th>Origem</th>
+                                        <th>Destino</th>
+                                        <th>Protocolo</th>
+                                        <th>Ação</th>
+
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for rule in rules %}
+                                    
+                                    <tr>
+                                        <td>{{ rule.dpid }}</td>
+                                        <td>{{ rule.src }}</td>
+                                        <td>{{ rule.dst }}</td>
+                                        <td>{{ rule.protocol }}</td>
+                                        <td>{{ rule.permission }}</td>
+                                        <td>
+                                            </a>
+                                            <a href="{{ url_for('apagar_regra_firewall', id = rule.id, dpid = rule.dpid)}}" class="waves-effect waves-light btn red right">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+                    {% else %}
+                    <div class="center">
+                        <p class="grey-text">Por padrão, ao executar uma aplicação de firewall, todos os switches são
+                            configurados para
+                            desativar seu status e interromper toda a comunicação. Para habilitar o status, clique no
+                            botão abaixo.</p><br>
+                        <a href="{{ url_for('habilitar_firewall')}}" class="waves-effect waves-light btn btn-large red">Habilitar
+                            Switches</a>
+                    </div>
+                    <br><br><br>
+                    {% endif %}
+                </div>
+                <!-- fim da div da conta do usuario  -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fim de container -->
+{% endblock %}

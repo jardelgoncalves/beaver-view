@@ -4,24 +4,16 @@
 <div class="container">
     <div class="section">
         <div class="row">
-            <div class="col s14">
+            <div class="col s12">
 
-                <div class="card-panel col s5">
+                <div class="card-panel">
                     <h4><span class="brown-text">Gráfico 1</span></h4>
-                    <canvas id="myChart1" width="100" height="100"></canvas>
+                    <canvas id="myChart1" width="50" height="20"></canvas>
                 </div>
 
-                <div class="card-panel col s5 offset-s1">
+                <div class="card-panel">
                     <h4><span class="brown-text">Gráfico 2</span></h4>
-                    <canvas id="myChart2" width="100" height="100"></canvas>
-                </div>
-                <div class="card-panel col s5">
-                    <h4><span class="brown-text">Gráfico 3</span></h4>
-                    <canvas id="myChartBarra1" width="100" height="100"></canvas>
-                </div>
-                <div class="card-panel col s5 offset-s1">
-                    <h4><span class="brown-text">Gráfico 4</span></h4>
-                    <canvas id="myChartBarra2" width="100" height="100"></canvas>
+                    <canvas id="myChart2" width="50" height="20"></canvas>
                 </div>
             </div>
         </div>
@@ -30,100 +22,36 @@
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-<script>
-    var ctx = document.getElementById("myChartBarra1").getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-</script>
-
-<script>
-    var ctx = document.getElementById("myChartBarra2").getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-</script>
 
 <script>
     var ctx = document.getElementById("myChart1");
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            labels: ["1 min", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
             datasets: [{
-                data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
-                lineTension: 0,
-                backgroundColor: 'transparent',
-                borderColor: '#007bff',
-                borderWidth: 4,
-                pointBackgroundColor: '#007bff'
-            }]
+                    data: [15339, 21345, 18483, 24003, 23489, 24092, 12034, 13239, 11145, 12483, 20003,
+                        12489, 11092, 10034, 13239
+                    ],
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#79c956',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#79c956',
+                    label: "RX"
+                },
+                {
+                    data: [13239, 11145, 12483, 20003, 12489, 11092, 10034, 15339, 21345, 18483, 24003,
+                        23489, 24092, 12034, 12489
+                    ],
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#4eb4e0',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#4eb4e0',
+                    label: "TX"
+                }
+            ]
         },
         options: {
             scales: {
@@ -134,7 +62,7 @@
                 }]
             },
             legend: {
-                display: false,
+                display: true,
             }
         }
     });
@@ -145,15 +73,30 @@
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
             datasets: [{
-                data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
-                lineTension: 0,
-                backgroundColor: 'transparent',
-                borderColor: '#007bff',
-                borderWidth: 4,
-                pointBackgroundColor: '#007bff'
-            }]
+                    data: [15339, 21345, 18483, 24003, 23489, 24092, 12034, 13239, 11145, 12483, 20003,
+                        12489, 11092, 10034, 13239
+                    ],
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#79c956',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#79c956',
+                    label: "RX"
+                },
+                {
+                    data: [13239, 11145, 12483, 20003, 12489, 11092, 10034, 15339, 21345, 18483, 24003,
+                        23489, 24092, 12034, 12489
+                    ],
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#4eb4e0',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#4eb4e0',
+                    label: "TX"
+                }
+            ]
         },
         options: {
             scales: {
@@ -164,7 +107,7 @@
                 }]
             },
             legend: {
-                display: false,
+                display: true,
             }
         }
     });

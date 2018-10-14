@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li><a href="{{ url_for('qos_config')}}">Configurar Filas</a></li>
+            <li><a href="#">Adicionar Regras</a></li>
+            <li><a href="#">QoS Host Docker</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Fim sub menu -->
+
+
+<!-- Inicio de container -->
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
+            <!-- Inicio da div dispositivos -->
+            <div class="col s10 offset-s1">
+                <h3><span class="brown-text">QoS</span></h3>
+                <hr>
+                {% if cont == 0 %}
+                <div class="card-panel yellow lighten-4 col s6 offset-s3">
+                        <ul class=flashes>
+                        <li><span class="green-text text-darken-4">É necessário definir o <strong>ovsdb_addr</strong> dos switches</span></li>
+                        <li><span class="green-text text-darken-4"><a href="{{ url_for('qos_ovsdb')}}">Clique aqui</a> para configurar.</span></li>
+                </div>
+                {% endif %}
+                <!-- inicio da div Regras de QoS  -->
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title center brown-text"><strong>Regras</strong></span>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>DPID</th>
+                                        <th>Prio</th>
+                                        <th>Proto</th>
+                                        <th>Port dst</th>
+                                        <th>IP dst</th>
+                                        <th>Ação</th>
+
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for rule in rules %}
+                                    <tr>
+                                        <td>{{rule.sw_id}}</td>
+                                        <td>{{rule.priority}}</td>
+                                        <td>{{rule.protocol}}</td>
+                                        <td>{{rule.port_dst}}</td>
+                                        <td>{{rule.addr_dst}}</td>
+                                        <td>{{rule.action}}</td>
+                                        <td>
+                                            <a href="{{ url_for('apagar_regra_qos', qos_id = rule.qos_id, sw_id = rule.sw_id)}}" class="waves-effect waves-light btn red right">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- fim da div Regras  -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fim de container -->
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li><a href="#">Configurar Filas</a></li>
+            <li><a href="#">Adicionar Regras</a></li>
+            <li><a href="#">QoS Host Docker</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Fim sub menu -->
+
+
+<!-- Inicio de container -->
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
+            <!-- Inicio da div dispositivos -->
+            <div class="col s10 offset-s1">
+                <h3><span class="brown-text">QoS</span></h3>
+                <hr>
+
+                <!-- inicio da div Regras de QoS  -->
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title center brown-text"><strong>Switches Configurados</strong></span>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>DPID</th>
+                                        <th>PORTA</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for switch in switches %}
+                                    <tr>
+                                        <td>{{switch.dpid}}</td>
+                                        <td>{{switch.port}}</td>
+                                        <td>
+                                            <a href="{{ url_for('apagar_config_switch', dpid = switch.dpid)}}" class="waves-effect waves-light btn red right">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                            <a href="{{ url_for('ver_config_queue', dpid = switch.dpid, iface = switch.port)}}" class="waves-effect waves-light btn green right">
+                                                <i class="material-icons">content_paste</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- fim da div Regras  -->
+                <a href="{{ url_for('config_qos_add')}}" class="waves-effect waves-light blue btn">
+                        Adicionar <i class="material-icons right">add</i>
+                    </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fim de container -->
+{% endblock %}

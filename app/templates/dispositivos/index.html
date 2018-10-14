@@ -28,22 +28,51 @@
                     <div class="card">
                         <div class="card-image">
                             {% for tp in types %}
-                                {% if tp.id == device.device_type_id %}
-                                    <img width="512" src="{{url_for('static', filename='img/components/' ~ tp.filename)}}">
-                                {% endif %}
+                            {% if tp.id == device.device_type_id %}
+                            <img width="512" src="{{url_for('static', filename='img/components/' ~ tp.filename)}}">
+                            {% endif %}
                             {% endfor %}
                         </div>
                         <div class="card-content">
                             <span class="card-title center brown-text"><strong>{{device.mac}}</strong></span>
                             <p>
-                                <strong>Status: </strong><span class="green-text">UP</span> <br>
-                                <strong>Perda de pacotes: </strong><span class="brown-text">20%</span> <br>
+                                <strong>DPID: </strong><span class="green-text">{{device.dpid}}</span> <br>
+                                <strong>Interface: </strong><span class="brown-text">{{device.interface}}</span> <br>
                             </p>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
                 <!-- fim da div do dispositivo  -->
+            </div>
+            <div class="col s12">
+                <h3><span class="brown-text">Hosts Docker</span></h3>
+                <hr>
+
+                <!-- inicio da div do hosts Docker  -->
+                {% for host in hosts %}
+                <div class="col s4">
+                    <div class="card">
+                        <div class="card-image">
+                            {% for tp in types %}
+                            {% if tp.id == host.device_type_id %}
+                            <img width="512" src="{{url_for('static', filename='img/components/' ~ tp.filename)}}">
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="card-content">
+                            <span class="card-title center brown-text"><strong>{{host.name}}</strong></span>
+                            <p>
+                                <strong>IP: </strong><span class="brown-text">{{host.ip}}</span> <br>
+                                <strong>Bridge: </strong><span class="brown-text">{{host.bridge_docker}}</span> <br>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- fim da div do hosts Docker   -->
+
+
             </div>
             <!-- Fim da div dispositivos -->
         </div>

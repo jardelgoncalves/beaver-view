@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel {{color}} lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
+
+            <!-- Card do formulario de login -->
+            <div class="col s8 offset-s2" style="margin-top:70px;">
+                <h4><span class="brown-text">Configurar Switch</span></h4>
+                <hr>
+                <br>
+                <form class="col s12" method="POST">
+                    {{ form.csrf_token }}
+                    <div class="row">
+                        <div class="input-field col s12">
+                            {{ form.dpid }}
+                            <label for="nome">DPID</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s6">
+                            {{ form.port }}
+                            <label for="url">PORTA</label>
+                        </div>
+                        <div class="input-field col s6">
+                            {{ form.max_rate }}
+                            <label>TAXA MÁXIMA</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <label style="margin-top:-40px;">TIPO</label>
+                            {{ form.tp }}
+                        </div>
+
+                    </div>
+
+                    <button class="btn waves-effect waves-light blue" type="submit">Adicionar
+                        <i class="material-icons right">add</i>
+                    </button>
+
+                    <br><br>
+                </form>
+            </div>
+            <!-- Fim do card do formulario de login -->
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

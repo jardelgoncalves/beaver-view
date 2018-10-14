@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li><a href="{{ url_for('add_regras_firewall')}}">Adicionar Regras</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Fim sub menu -->
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+
+            <!-- Mensagens de erros -->
+            {% if form.errors.dpid %}
+            <div class="card-panel red lighten-4 col s6 offset-s3">
+                <ul>
+                    {% for e in form.errors.dpid %}
+                    <li><span class="red-text text-darken-4">{{e}}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <!-- Fim das mensagens de erros -->
+
+            <!-- Inicio de mensagens de sucesso -->
+            <div class="card-panel green lighten-4 col s6 offset-s3">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Fim de mensagens de atenção -->
+
+            <!-- formulario de adicionar tipo -->
+            <div class="col s8 offset-s2" style="margin-top:70px;">
+                <h4><span class="brown-text">Adicionar Regras do Firewall</span></h4>
+                <hr>
+                <br>
+                <form class="col s12" method="POST">
+                    {{ form.csrf_token }}
+                    <div class="row">
+                        <div class="input-field col s12">
+                            {{ form.dpid }}
+                            <label for="name">DPID</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s8">
+                            {{ form.src }}
+                            <label for="name">Origem</label>
+                        </div>
+                        <div class="input-field col s4">
+                            {{ form.prefix_src }}
+                            <label for="name">Prefixo da rede</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s8">
+                            {{ form.dst }}
+                            <label for="name">Destino</label>
+                        </div>
+                        <div class="input-field col s4">
+                            {{ form.prefix_dst }}
+                            <label for="name">Prefixo da rede</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            {{ form.proto }}
+                            <label for="name">Protocolo</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s4">
+                            <label style="margin-top:-40px;">Ação</label>
+                            {{ form.action }}
+                        </div>
+                    </div>
+                    <br>
+                    <button class="btn waves-effect waves-light blue right" type="submit">Adicionar
+                            <i class="material-icons right">add</i>
+                        </button>
+                </form>
+            </div>
+            <!-- Fim do formulario de adicionar tipo -->
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
