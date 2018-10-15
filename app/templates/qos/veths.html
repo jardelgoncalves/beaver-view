@@ -17,7 +17,7 @@
     <div class="section">
         <div class="row">
             <!-- Inicio de mensagens de sucesso -->
-            <div class="card-panel {{color}} lighten-4 col s6 offset-s3">
+            <div class="card-panel red lighten-4 col s6 offset-s3">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 <ul class=flashes>
@@ -32,42 +32,48 @@
 
             <!-- Card do formulario de login -->
             <div class="col s8 offset-s2" style="margin-top:70px;">
-                <h4><span class="brown-text">Configurar Switch</span></h4>
+                <h4><span class="brown-text">Pesquisar interfaces</span></h4>
                 <hr>
                 <br>
                 <form class="col s12" method="POST">
                     {{ form.csrf_token }}
-                    <div class="row">
-                        <div class="input-field col s12">
-                            {{ form.dpid }}
-                            <label for="nome">DPID</label>
-                        </div>
-                    </div>
 
                     <div class="row">
-                        <div class="input-field col s6">
-                            {{ form.port }}
-                            <label for="url">PORTA</label>
+                        <div class="input-field col s8">
+                            {{ form.ip }}
+                            <label for="nome">IP do Host</label>
                         </div>
-                        <div class="input-field col s6">
-                            {{ form.max_rate }}
-                            <label>TAXA MÁXIMA</label>
+                        <div class="input-field col s4">
+                            <button class="btn waves-effect waves-light blue" type="submit">
+                                <i class="material-icons right">search</i>
+                            </button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="input-field col s6">
-                            <label style="margin-top:-40px;">TIPO</label>
-                            {{ form.tp }}
-                        </div>
-
-                    </div>
-
-                    <button class="btn waves-effect waves-light blue" type="submit">Adicionar
-                        <i class="material-icons right">add</i>
-                    </button>
-
                     <br><br>
                 </form>
+
+                {% if pesquisa == True and tam > 0 %}
+                <table class="highlight">
+                    <thead>
+                        <tr>
+                            <th>IP do contêiner</th>
+                            <th>Interface</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for veth in veths %}
+                        <tr>
+                            <td>{{veth.ip}}</td>
+                            <td>{{veth.iface}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+
+
+
             </div>
             <!-- Fim do card do formulario de login -->
 

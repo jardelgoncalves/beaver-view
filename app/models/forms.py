@@ -47,3 +47,26 @@ class ConfigQoSForm(FlaskForm):
 
 class UpdateQueueForm(FlaskForm):
     util = HiddenField("util", render_kw={"id": "todas_queue"})
+
+
+class RegrasQoSForm(FlaskForm):
+    addr_src = StringField("addr_src")
+    addr_dst = StringField("addr_dst")
+    protocol = SelectField('tp', choices=[('UDP', 'UDP'),('TCP', 'TCP'),('ICMP', 'ICMP')], 
+                                render_kw={"class": "browser-default"})
+    port_src = StringField("port_src")
+    port_dst = StringField("port_dst")
+    dpid = StringField("dpid", validators=[InputRequired()])
+    queue = StringField("queue", validators=[InputRequired()])
+
+class QoSHostDockerForm(FlaskForm):
+    ip        = StringField("ip", validators=[InputRequired()])
+    iface     = StringField("iface", validators=[InputRequired()])
+    rate      = StringField("rate", validators=[InputRequired()]) 
+    latency   = StringField("latency", validators=[InputRequired()])
+    burst     = StringField("burst", validators=[InputRequired()])
+    peakrate  = StringField("peakrate", validators=[InputRequired()])
+    minburst  = StringField("minburst", validators=[InputRequired()])
+
+class PesquisarVethForm(FlaskForm):
+    ip        = StringField("ip", validators=[InputRequired()])

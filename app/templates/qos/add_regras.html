@@ -32,36 +32,47 @@
 
             <!-- Card do formulario de login -->
             <div class="col s8 offset-s2" style="margin-top:70px;">
-                <h4><span class="brown-text">Configurar Switch</span></h4>
+                <h4><span class="brown-text">Adicionar Regra</span></h4>
                 <hr>
                 <br>
                 <form class="col s12" method="POST">
                     {{ form.csrf_token }}
                     <div class="row">
-                        <div class="input-field col s12">
+                        <div class="input-field col s8">
+                            {{ form.addr_src }}
+                            <label for="nome">Endereço de Origem</label>
+                        </div>
+                        <div class="input-field col s4">
+                            {{ form.port_src }}
+                            <label for="nome">Porta de Origem</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            {{ form.addr_dst }}
+                            <label for="nome">Endereço de Destino</label>
+                        </div>
+                        <div class="input-field col s4">
+                            {{ form.port_dst }}
+                            <label for="nome">Porta de Destino</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
                             {{ form.dpid }}
                             <label for="nome">DPID</label>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="input-field col s6">
-                            {{ form.port }}
-                            <label for="url">PORTA</label>
-                        </div>
-                        <div class="input-field col s6">
-                            {{ form.max_rate }}
-                            <label>TAXA MÁXIMA</label>
+                        <div class="input-field col s4">
+                            {{ form.queue }}
+                            <label for="nome">Fila</label>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="input-field col s6">
-                            <label style="margin-top:-40px;">TIPO</label>
-                            {{ form.tp }}
+                        <div class="input-field col s4">
+                            <label style="margin-top:-40px;">Protocolo</label>
+                            {{ form.protocol }}
                         </div>
-
                     </div>
-
                     <button class="btn waves-effect waves-light blue" type="submit">Adicionar
                         <i class="material-icons right">add</i>
                     </button>

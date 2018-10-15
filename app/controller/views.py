@@ -7,13 +7,14 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 from app.models.tables import User, DeviceTypes, Device, Link, Resource, HostDocker
 from app.models.forms import LoginForm, TipoForm, RecursoForm, HostDockerForm, AddRegrasForm
-from app.models.forms import ConfigOVSDBForm, ConfigQoSForm, UpdateQueueForm
+from app.models.forms import ConfigOVSDBForm, ConfigQoSForm, UpdateQueueForm, RegrasQoSForm
+from app.models.forms import QoSHostDockerForm, PesquisarVethForm
 from werkzeug.utils import secure_filename
 from time import ctime
 from sqlalchemy import or_
 from hashlib import sha224
 
-from app.models.Obj import RegrasFirewall, applyRegras, RegrasQos, SwitchConfQoS, QoSQueue
+from app.models.Obj import RegrasFirewall, applyRegras, RegrasQos, SwitchConfQoS, QoSQueue, Veths
 
 from sqlalchemy.exc import IntegrityError
 from requests.exceptions import ConnectionError
@@ -398,12 +399,25 @@ def qos():
                             sw_id = rule['switch_id']
                             prio = cada['priority']
                             protocol = cada['nw_proto']
-                            port_dst = cada['tp_dst']
-                            addr_dst = cada['nw_dst']
+                            addr_dst = 'any'
+                            port_dst = 'any'
+
+                            addr_src = 'any'
+                            port_src = 'any'
+                            if 'tp_dst' in cada:
+                                port_dst = cada['tp_dst']
+                            if 'nw_dst' in cada:
+                                addr_dst = cada['nw_dst']
+
+                            if 'tp_src' in cada:
+                                port_src = cada['tp_src']
+                            if 'nw_src' in cada:
+                                addr_src = cada['nw_src']
+
                             qos_id = cada['qos_id']
                             action = "queue %s" %cada['actions'][0]['queue']
-
-                            regra = RegrasQos(sw_id,prio,protocol,port_dst,addr_dst,qos_id,action)
+                            regra = RegrasQos(sw_id, prio, protocol, qos_id, action, 
+                                              addr_dst, port_dst, addr_src, port_src)
                             rules_obj.append(regra)
         except ConnectionError:
             pass
@@ -497,13 +511,28 @@ def ver_config_queue(dpid,iface):
         flash("Restricted area for registered users.")
         return redirect(url_for("index"))
 
-@app.route("/qos/config/ver_queue/update", methods=["GET", "POST"])
-def atualizar_queue():
+@app.route("/qos/config/ver_queue/update", defaults={'dpid': None}, methods=["GET", "POST"])
+@app.route("/qos/config/ver_queue/update/<dpid>", methods=["GET", "POST"])
+def atualizar_queue(dpid):
     if current_user.is_authenticated:
         form = UpdateQueueForm()
         if form.validate_on_submit():
-            print json.loads(form.util.data)
-
+            response = json.loads(form.util.data)
+            queues = {"queues":[]}
+            for q in response["queue"]:
+                if q['min_rate'] == '-' and q['max_rate'] != "-":
+                    queues["queues"].append({"max_rate":"%s" %q['max_rate']})
+                elif q['min_rate'] != '-' and q['max_rate'] == '-':
+                    queues["queues"].append({"min_rate":"%s" %q['min_rate']})
+                elif q['min_rate'] != '-' and q['max_rate'] != '-':
+                    queues["queues"].append({"max_rate":"%s" %q['max_rate'], "min_rate":"%s" %q['min_rate']})
+            if len(queues['queues']) > 0:
+                r = requests.post("http://localhost:8080/qos/queue/%s" %dpid, data=json.dumps(queues))
+                if r.status_code == 200:
+                    flash("Queues added to the configuration.")
+                    return redirect(url_for('qos_config'))
+                else:
+                    flash("Queues not added.")
         return render_template("qos/update.html", form=form)
 
     else:
@@ -563,6 +592,78 @@ def qos_ovsdb():
     else:
         flash("Restricted area for registered users.")
         return redirect(url_for("index"))
+
+
+@app.route("/qos/add_regras", methods=['GET','POST'])
+def add_qos_regras():
+    if current_user.is_authenticated:
+        form = RegrasQoSForm()
+        match={"match":{},"actions":{}}
+        if form.validate_on_submit():
+            if form.addr_dst.data != '':
+                match["match"]['nw_dst'] = form.addr_dst.data
+
+            if form.port_dst.data != '':
+                match["match"]['tp_dst'] = form.port_dst.data
+
+            if form.addr_src.data != '':
+                match["match"]['nw_src'] = form.addr_src.data
+
+            if form.port_src.data != '':
+                match["match"]['tp_src'] = form.port_src.data
+
+            match["match"]["nw_proto"] = form.protocol.data
+            match['actions']['queue'] = form.queue.data
+
+            r = requests.post("http://localhost:8080/qos/rules/%s" %form.dpid.data, data=json.dumps(match))
+            if r.status_code == 200:
+                print "show"
+            else:
+                print "não"
+
+        return render_template("qos/add_regras.html", form=form)
+    else:
+        flash("Restricted area for registered users.")
+        return redirect(url_for("index"))
+
+
+@app.route("/qos/qos_host_docker", methods=['GET','POST'])
+def qos_host_docker():
+    if current_user.is_authenticated:
+        form = QoSHostDockerForm()
+        if form.validate_on_submit():
+            print form.latency.data
+        return render_template("qos/docker_qos.html", form=form)
+    else:
+        flash("Restricted area for registered users.")
+        return redirect(url_for("index"))
+
+
+@app.route("/qos/qos_host_docker/pesquisar_veths", methods=['GET','POST'])
+def pesquisar_veth():
+    if current_user.is_authenticated:
+        form = PesquisarVethForm()
+        pesquisa=False
+        veths=[]
+        try:
+            if form.validate_on_submit():
+                r = requests.get("http://%s:5000/ifaces" %form.ip.data)
+                if r.status_code == 200:
+                    resp = json.loads(r.text)
+                    pesquisa=True
+                    for c in resp:
+                        v = Veths(resp[c][0]["IP"],resp[c][0]["veth"])
+                        veths.append(v)
+                else:
+                    print "deu merda"
+        except ConnectionError:
+            flash("Error while trying to connect to host.")
+        return render_template("qos/veths.html", form=form, pesquisa=pesquisa,
+                               veths=veths, tam=len(veths))
+    else:
+        flash("Restricted area for registered users.")
+        return redirect(url_for("index"))
+
 
 @app.route("/logout")
 def logout():

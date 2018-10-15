@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<nav>
+    <div class="nav-wrapper brown darken-1">
+        <ul class="left hide-on-med-and-down">
+            <li><a href="{{ url_for('qos_config')}}">Configurar Filas</a></li>
+            <li><a href="{{url_for('add_qos_regras')}}">Adicionar Regras</a></li>
+            <li><a href="{{url_for('qos_host_docker')}}">QoS Host Docker</a></li>
+            <li><a href="{{ url_for('qos_ovsdb')}}">OVSDB</a></li>
+        </ul>
+    </div>
+</nav>
 
 <div class="container">
     <div class="section">
@@ -21,7 +31,7 @@
 
             <!-- Card do formulario de login -->
             <div class="col s8 offset-s2" style="margin-top:70px;">
-                <h4><span class="brown-text">Definir OVSDB</span></h4>
+                <h4><span class="brown-text">Adicionar ou atualizar Filas</span></h4>
                 <hr>
                 <br>
                 <form class="col s12" method="POST">

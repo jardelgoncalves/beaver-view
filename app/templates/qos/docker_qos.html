@@ -32,35 +32,61 @@
 
             <!-- Card do formulario de login -->
             <div class="col s8 offset-s2" style="margin-top:70px;">
-                <h4><span class="brown-text">Configurar Switch</span></h4>
+                <h4><span class="brown-text">Aplicar QoS em Contêiner</span></h4>
                 <hr>
                 <br>
                 <form class="col s12" method="POST">
                     {{ form.csrf_token }}
+
                     <div class="row">
                         <div class="input-field col s12">
-                            {{ form.dpid }}
-                            <label for="nome">DPID</label>
+                            {{ form.ip }}
+                            <label for="nome">IP do Host</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8">
+                            {{ form.iface }}
+                            <label for="nome">Interface do contêiner</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <a href="{{url_for('pesquisar_veth')}}" class="btn waves-effect waves-light blue" target="_blank">
+                                <i class="material-icons right">search</i>
+                            </a>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s6">
-                            {{ form.port }}
-                            <label for="url">PORTA</label>
+                            {{ form.rate }}
+                            <label for="nome">Taxa</label>
                         </div>
                         <div class="input-field col s6">
-                            {{ form.max_rate }}
-                            <label>TAXA MÁXIMA</label>
+                            {{ form.latency }}
+                            <label for="nome">Latência</label>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="input-field col s6">
-                            <label style="margin-top:-40px;">TIPO</label>
-                            {{ form.tp }}
+                            {{ form.burst }}
+                            <label for="nome">Burst</label>
+                        </div>
+                        <div class="input-field col s6">
+                            {{ form.peakrate }}
+                            <label for="nome">Peak rate</label>
                         </div>
 
                     </div>
+
+                    <div class="row">
+                        <div class="input-field col s6">
+                            {{ form.minburst }}
+                            <label for="nome">minburst</label>
+                        </div>
+
+                    </div>
+
 
                     <button class="btn waves-effect waves-light blue" type="submit">Adicionar
                         <i class="material-icons right">add</i>

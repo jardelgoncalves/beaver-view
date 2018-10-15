@@ -4,9 +4,10 @@
 <nav>
     <div class="nav-wrapper brown darken-1">
         <ul class="left hide-on-med-and-down">
-            <li><a href="#">Configurar Filas</a></li>
-            <li><a href="#">Adicionar Regras</a></li>
-            <li><a href="#">QoS Host Docker</a></li>
+            <li><a href="{{ url_for('qos_config')}}">Configurar Filas</a></li>
+            <li><a href="{{url_for('add_qos_regras')}}">Adicionar Regras</a></li>
+            <li><a href="{{url_for('qos_host_docker')}}">QoS Host Docker</a></li>
+            <li><a href="{{ url_for('qos_ovsdb')}}">OVSDB</a></li>
         </ul>
     </div>
 </nav>
@@ -64,7 +65,7 @@
                     </div>
                 </div>
                 <!-- fim da div Regras  -->
-                <a href="#" class="waves-effect waves-light blue btn">
+                <a href="{{ url_for('atualizar_queue', dpid = dpid)}}" class="waves-effect waves-light blue btn">
                         Adicionar <i class="material-icons right">add</i>
                     </a>
             </div>

@@ -5,8 +5,9 @@
     <div class="nav-wrapper brown darken-1">
         <ul class="left hide-on-med-and-down">
             <li><a href="{{ url_for('qos_config')}}">Configurar Filas</a></li>
-            <li><a href="#">Adicionar Regras</a></li>
-            <li><a href="#">QoS Host Docker</a></li>
+            <li><a href="{{url_for('add_qos_regras')}}">Adicionar Regras</a></li>
+            <li><a href="{{url_for('qos_host_docker')}}">QoS Host Docker</a></li>
+            <li><a href="{{ url_for('qos_ovsdb')}}">OVSDB</a></li>
         </ul>
     </div>
 </nav>
@@ -54,9 +55,9 @@
                                         <th>Proto</th>
                                         <th>Port dst</th>
                                         <th>IP dst</th>
+                                        <th>Port src</th>
+                                        <th>IP src</th>
                                         <th>Ação</th>
-
-
                                     </tr>
                                 </thead>
 
@@ -68,6 +69,8 @@
                                         <td>{{rule.protocol}}</td>
                                         <td>{{rule.port_dst}}</td>
                                         <td>{{rule.addr_dst}}</td>
+                                        <td>{{rule.port_src}}</td>
+                                        <td>{{rule.addr_src}}</td>
                                         <td>{{rule.action}}</td>
                                         <td>
                                             <a href="{{ url_for('apagar_regra_qos', qos_id = rule.qos_id, sw_id = rule.sw_id)}}" class="waves-effect waves-light btn red right">

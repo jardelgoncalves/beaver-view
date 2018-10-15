@@ -43,12 +43,14 @@ def applyRegras(src,prefix_src,dst, prefix_dst, proto, action):
     return dic
 
 class RegrasQos:
-    def __init__(self, sw_id, prio, proto, port_dst, addr_dst, qos_id, action):
+    def __init__(self, sw_id, prio, proto, qos_id, action, addr_dst='any', port_dst='any',addr_src='any', port_src='any'):
         self.sw_id = sw_id
         self.priority = prio
         self.protocol = proto
         self.port_dst = port_dst
         self.addr_dst = addr_dst
+        self.port_src = port_src
+        self.addr_src = addr_src
         self.qos_id = qos_id
         self.action = action
 
@@ -64,3 +66,8 @@ class QoSQueue:
         self.id = id
         self.max_rate = max_rate
         self.min_rate = min_rate
+
+class Veths:
+    def __init__(self, ip, iface):
+        self.ip = ip
+        self.iface = iface
