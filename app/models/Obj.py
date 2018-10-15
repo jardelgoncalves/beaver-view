@@ -71,3 +71,15 @@ class Veths:
     def __init__(self, ip, iface):
         self.ip = ip
         self.iface = iface
+
+class RulesVeth:
+    def __init__(self, veth, ip, id, rate, burst, latency, peakrate, minburst,ip_host):
+        self.veth       = veth
+        self.ip         = ip
+        self.id         = id
+        self.rate       = rate
+        self.burst      = burst
+        self.latency    = latency
+        self.peakrate   = peakrate
+        self.minburst   = minburst
+        self.ip_host    = ip_host

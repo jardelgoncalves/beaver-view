@@ -14,7 +14,8 @@ from time import ctime
 from sqlalchemy import or_
 from hashlib import sha224
 
-from app.models.Obj import RegrasFirewall, applyRegras, RegrasQos, SwitchConfQoS, QoSQueue, Veths
+from app.models.Obj import RegrasFirewall, applyRegras, RegrasQos, SwitchConfQoS, QoSQueue
+from app.models.Obj import Veths, RulesVeth
 
 from sqlalchemy.exc import IntegrityError
 from requests.exceptions import ConnectionError
@@ -627,13 +628,89 @@ def add_qos_regras():
         return redirect(url_for("index"))
 
 
-@app.route("/qos/qos_host_docker", methods=['GET','POST'])
+@app.route("/qos/docker/list", methods=["GET"])
+def qos_docker_list():
+    if current_user.is_authenticated:
+        rules = []
+        hosts = HostDocker.query.all()
+        for host in hosts:
+            r = requests.get("http://%s:5000/qos/rules" %host.ip)
+            if r.status_code == 200:
+                resp = json.loads(r.text)
+                for v in resp:
+                    rule = RulesVeth(v,resp[v]['IP'], resp[v]['ID'],resp[v]['rule']['rate'],
+                                     resp[v]['rule']['burst'], resp[v]['rule']['latency'],
+                                     resp[v]['rule']['peak'],resp[v]['rule']['minburst'],
+                                     host.ip)
+                    rules.append(rule)
+
+        return render_template("qos/docker_qos_list.html",rules=rules)
+
+
+
+@app.route("/qos/docker/del", defaults={'veth': None,'ip_host':None}, methods=['GET','POST'])
+@app.route("/qos/docker/del/<veth>/<ip_host>", methods=['GET','POST'])
+def del_rule_docker(veth,ip_host):
+    if current_user.is_authenticated:
+        host = HostDocker.query.filter_by(ip=ip_host).first()
+        d = {
+                "veth":veth,
+                "user": host.user,
+                "pass": host.password
+            }
+        try:
+            r = requests.delete("http://%s:5000/qos/rules" %host.ip, data=json.dumps(d))
+            if r.status_code == 200:
+                flash("Rule deleted.")
+            else:
+                flash("An error has occurred.")
+                
+        except ConnectionError:
+            flash("connection error")
+        
+        return redirect(url_for("qos_docker_list"))
+
+    else:
+        flash("Restricted area for registered users.")
+        return redirect(url_for("index"))
+
+
+@app.route("/qos/docker/add", methods=['GET','POST'])
 def qos_host_docker():
     if current_user.is_authenticated:
+        color = 'green'
         form = QoSHostDockerForm()
         if form.validate_on_submit():
-            print form.latency.data
-        return render_template("qos/docker_qos.html", form=form)
+            try:
+                host = HostDocker.query.filter_by(ip=form.ip.data).first()
+                print host.ip
+                d = {
+                        "veth": form.iface.data,
+                        "user": host.user,
+                        "pass": host.password,
+                        "rate": '%skbit' %form.rate.data,
+                        "burst": '%skbit' %form.burst.data,
+                        "latency": '%sms' %form.latency.data,
+                        "peak": '%skbit' %form.peakrate.data,
+                        "minburst": '%sb' %form.minburst.data
+                    }
+                try:
+                    r = requests.post("http://%s:5000/qos/rules" %host.ip, data=json.dumps(d))
+                    if r.status_code == 200:
+                        flash("Rule added.")
+                    else:
+                        color="red"
+                        flash("Rule not added.")
+                        
+                except ConnectionError:
+                    color="red"
+                    flash("the connection failed.")
+
+            except AttributeError:
+                color="red"
+                flash("Host does not exist in the database.")
+
+        return render_template("qos/docker_qos.html", form=form, color=color)
     else:
         flash("Restricted area for registered users.")
         return redirect(url_for("index"))

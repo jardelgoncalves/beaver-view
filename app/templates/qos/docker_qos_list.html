@@ -35,45 +35,36 @@
             <div class="col s10 offset-s1">
                 <h3><span class="brown-text">QoS</span></h3>
                 <hr>
-                {% if cont == 0 %}
-                <div class="card-panel yellow lighten-4 col s6 offset-s3">
-                        <ul class=flashes>
-                        <li><span class="green-text text-darken-4">É necessário definir o <strong>ovsdb_addr</strong> dos switches</span></li>
-                        <li><span class="green-text text-darken-4"><a href="{{ url_for('qos_ovsdb')}}">Clique aqui</a> para configurar.</span></li>
-                </div>
-                {% endif %}
                 <!-- inicio da div Regras de QoS  -->
                 <div class="col s12">
                     <div class="card">
                         <div class="card-content">
-                            <span class="card-title center brown-text"><strong>Regras</strong></span>
+                            <span class="card-title center brown-text"><strong>Regras aplicadas em contêiner</strong></span>
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>DPID</th>
-                                        <th>Prio</th>
-                                        <th>Proto</th>
-                                        <th>Port dst</th>
-                                        <th>IP dst</th>
-                                        <th>Port src</th>
-                                        <th>IP src</th>
-                                        <th>Ação</th>
+                                        <th>IP Host</th>
+                                        <th>IP Contêiner</th>
+                                        <th>Taxa</th>
+                                        <th>Burst</th>
+                                        <th>Latência</th>
+                                        <th>Peakrate</th>
+                                        <th>Minburst</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     {% for rule in rules %}
                                     <tr>
-                                        <td>{{rule.sw_id}}</td>
-                                        <td>{{rule.priority}}</td>
-                                        <td>{{rule.protocol}}</td>
-                                        <td>{{rule.port_dst}}</td>
-                                        <td>{{rule.addr_dst}}</td>
-                                        <td>{{rule.port_src}}</td>
-                                        <td>{{rule.addr_src}}</td>
-                                        <td>{{rule.action}}</td>
+                                        <td>{{rule.ip_host}}</td>
+                                        <td>{{rule.ip}}</td>
+                                        <td>{{rule.rate}}</td>
+                                        <td>{{rule.burst}}</td>
+                                        <td>{{rule.latency}}</td>
+                                        <td>{{rule.peakrate}}</td>
+                                        <td>{{rule.minburst}}</td>
                                         <td>
-                                            <a href="{{ url_for('apagar_regra_qos', qos_id = rule.qos_id, sw_id = rule.sw_id)}}" class="waves-effect waves-light btn red right">
+                                            <a href="{{ url_for('del_rule_docker', veth = rule.veth, ip_host = rule.ip_host)}}" class="waves-effect waves-light btn red right">
                                                 <i class="material-icons">delete</i>
                                             </a>
                                         </td>
@@ -85,6 +76,9 @@
                         </div>
                     </div>
                 </div>
+                <a href="{{ url_for('qos_host_docker')}}" class="waves-effect waves-light btn blue left">
+                    Adicionar <i class="material-icons right">add</i>
+                </a>
                 <!-- fim da div Regras  -->
             </div>
         </div>
