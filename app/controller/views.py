@@ -1,163 +1,191 @@
 # -*- coding: utf-8 -*-
 import os, requests, json
 
+# Lib Objetos/Metodos do Flask
 from app import app, db, login_manager
 from flask import render_template, url_for, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 
+# Importando as libs de fomurlario
 from app.models.tables import User, DeviceTypes, Device, Link, Resource, HostDocker
 from app.models.forms import LoginForm, TipoForm, RecursoForm, HostDockerForm, AddRegrasForm
 from app.models.forms import ConfigOVSDBForm, ConfigQoSForm, UpdateQueueForm, RegrasQoSForm
 from app.models.forms import QoSHostDockerForm, PesquisarVethForm
+
+# usado no uploads de arquivos
 from werkzeug.utils import secure_filename
 from time import ctime
 from sqlalchemy import or_
 from hashlib import sha224
 
+# Objetos utilziados para facilitar a integracao com as paginas html
 from app.models.Obj import RegrasFirewall, applyRegras, RegrasQos, SwitchConfQoS, QoSQueue
 from app.models.Obj import Veths, RulesVeth
 
+# Classes de errors
 from sqlalchemy.exc import IntegrityError
 from requests.exceptions import ConnectionError
 
-
+# Usado para retornar o USUARIO armazenado na sessao
 @login_manager.user_loader
 def load_user(id):
     return User.query.filter_by(id=id).first()
 
 
+# Rota /index (pagina de login) da ferramenta
 @app.route("/", methods=['GET', 'POST'])
 def index():
+    logout_user() # Caso tenha um usuario logado, ele terá sua seção encerrada
 
-    logout_user()
-    form = LoginForm()
+    form = LoginForm() # Intancia de um objeto de form para criar o formulario na pagina
+    if form.validate_on_submit(): # Verifica se o usuario submeteu os dados do form
 
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.password == form.password.data:
-            login_user(user)
-            return redirect(url_for("dashboard"))
+        user = User.query.filter_by(email=form.email.data).first() # Select no banco
+        if user and user.password == form.password.data: # autenticacao do usuario
+            login_user(user) # login do usuario
+            return redirect(url_for("dashboard")) # redirecionamento para a dashboard da ferramenta
         else:
-            flash("Invalid login")
+            flash("Invalid login") # mensagem de erro
 
-    return render_template("index.html", form=form)
+    return render_template("index.html", form=form) # renderização da página index
 
 
+# Rota /dashboard da ferramenta
 @app.route("/dashboard")
 def dashboard():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated: # verifica a autenticação do usuario
         vet = [1,2,23,65,75,32,11]
-        return render_template("dashboard.html", vet=vet)
+        return render_template("dashboard.html", vet=vet) # renderização da página dashboard
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /topologia da ferramenta
 @app.route("/topologia")
 def topologia():
-    if current_user.is_authenticated:
-        d = Device.query.all()
-        nodes = []
-        for device in d:
-            nodes.append({"id":device.dpid, "label":device.mac, "group":0})
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        d = Device.query.all() # retorna todos os switches cadastrado no banco de dados
+        nodes = [] # vetor para armazenar dados em registros sobre os switches
+        for device in d: # percorre todos os switches
+            nodes.append({"id":device.dpid, "label":device.mac, "group":0}) # adiciona os registros
 
-        edges = []
-        l = Link.query.all()
-        for device in l:
-            edges.append({"from":device.dpid_src, "to":device.dpid_dst})
+        edges = [] # armazenar dpid dos switches e a quem ele esta conecado
+        l = Link.query.all() # retorna todos os links no banco de dados
+        for device in l: # percorre todos os dispositivos que possui links
+            edges.append({"from":device.dpid_src, "to":device.dpid_dst}) # adiciona os registros
 
-        return render_template("topologia.html", nodes=nodes, edges=edges)
+        return render_template("topologia.html", nodes=nodes, edges=edges) # renderiza a página com as informações 
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /dispositivo da ferramenta
 @app.route("/dispositivos")
 def dispositivos():
-    if current_user.is_authenticated:
-        devices = Device.query.all()
-        hosts = HostDocker.query.all()
-        types = DeviceTypes.query.all()
-        return render_template("dispositivos/index.html", devices=devices,types=types, hosts=hosts)
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        devices = Device.query.all() # retorna todos os switches cadastrado no banco de dados
+        hosts = HostDocker.query.all() # retorna todos os Host Docker cadastrado no banco de dados
+        types = DeviceTypes.query.all() # retorna todos os tipos de dispositivos cadastrado no banco de dados
+        return render_template("dispositivos/index.html", 
+                         devices=devices,types=types, hosts=hosts) # renderiza a página com as informações
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /dispositivo/adicionar_tipo da ferramenta (Adicionar tipo de dispositivo)
 @app.route("/dispositivos/adicionar_tipo", methods=['GET', 'POST'])
-def adicionar_tipo():
-    if current_user.is_authenticated:
-        form = TipoForm()
-        if form.validate_on_submit():
-            photo = form.photo.data
-            name = form.name.data
-            hsh = sha224(ctime()).hexdigest()
-            filename = "%s.png" %hsh
+def adicionar_tipo(): 
+    if current_user.is_authenticated:      # verifica a autenticação do usuario
+        form = TipoForm()      # Intancia de um objeto de form para criar o formulario na pagina
+        if form.validate_on_submit():      # Verifica se o usuario submeteu os dados do form
+            try:
+                # Pega os dados passado no form
+                photo = form.photo.data 
+                name = form.name.data
+                # Cria um hash para salvar a foto com base no momento do upload
+                hsh = sha224(ctime()).hexdigest()
+                filename = "%s.png" %hsh
+                # Instancia um objeto DeviceType passando o nome e a foto
+                td = DeviceTypes(name, filename)
+                # Adiciona no banco e faz commit
+                db.session.add(td)
+                db.session.commit()
 
-            td = DeviceTypes(name, filename)
-            db.session.add(td)
-            db.session.commit()
+                # Salva a foto na pasta components dentro de /static/img
+                photo.save(os.path.join(
+                    os.getcwd(), 'app/static/img/components', filename
+                ))
+                flash("added successfully")    # Mensagem de sucesso
+            except IntegrityError:
+                flash("This TYPE OF DEVICE already exists.")
 
-            photo.save(os.path.join(
-                os.getcwd(), 'app/static/img/components', filename
-            ))
-            flash("added successfully")
-
-        return render_template("dispositivos/add_tipo.html", form=form)
+        return render_template("dispositivos/add_tipo.html", form=form)     # Renderiza a página com o formulario
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.")       # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index"))       # redirecionamento a página index (login)
 
 
+# Rota /dispositivo/adicionar_dispositivo da ferramenta (adicionar host docker)
 @app.route("/dispositivos/adicionar_dispositivo",  methods=['GET', 'POST'])
-def adicionar_dispositivo():
-    if current_user.is_authenticated:
-        form = HostDockerForm()
-        if form.validate_on_submit():
-            types = DeviceTypes.query.all()
-            id_type = None
-            for tipo in types:
-                if "DOCKER" in tipo.name.upper():
-                    id_type = tipo.id
+def adicionar_dispositivo(): 
+    if current_user.is_authenticated:    # verifica a autenticação do usuario
+        form = HostDockerForm()         # Intancia de um objeto de form para criar o formulario na pagina
+        if form.validate_on_submit():     # Verifica se o usuario submeteu os dados do form
+            types = DeviceTypes.query.all()     # Retorna todos os tipos de dispositivos
+            id_type = None     # declara uma variavel None
+            for tipo in types:      # percorre todos os tipos de dispositivos no banco
+                if "DOCKER" in tipo.name.upper():     # verifica se algum tipo possui a palavra chave "Docker"
+                    id_type = tipo.id       # Caso tenha a variavel a cima recebe o ID
             
-            if id_type != None:
-                print id_type
+            if id_type != None: # verifica se a variavel acima é diferente de None
+                # Cria um objeto HostDocker passando os dados
                 host = HostDocker(form.name.data,form.user.data,form.password.data,
                                   form.ip.data,int(id_type),form.bridge_docker.data)
+                # Adiciona no banco e faz commit
                 db.session.add(host)
                 db.session.commit()
-                flash("Added successfully")
+                flash("Added successfully") # Mensagem de sucesso
             else:
                 flash("Host not added, please add the device type Docker.")
 
-        return render_template("dispositivos/add_dispositivo.html", form=form)
+        return render_template("dispositivos/add_dispositivo.html", form=form) # renderiza a pagina com o form
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /dispositivo/remover_dispositivo da ferramenta
 @app.route("/dispositivos/remover_dispositivo")
 def remover_dispositivo():
-    if current_user.is_authenticated:
-        devices = Device.query.all()
-        hosts = HostDocker.query.all()
-        types = DeviceTypes.query.all()
-        return render_template("dispositivos/rm_dispositivo.html", devices=devices,types=types, hosts=hosts)
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        devices = Device.query.all() # retorna todos os switches
+        hosts = HostDocker.query.all() # retorna todos os hosts Docker
+        types = DeviceTypes.query.all() # retorna todos os tipos de dispositivo
+        return render_template("dispositivos/rm_dispositivo.html", 
+                               devices=devices,types=types, hosts=hosts) # renderiza a página com as informações
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
-@app.route("/configuracao/remover_dispositivo/apagar/", defaults={'id': None}, methods=["GET", "DELETE"])
-@app.route("/configuracao/remover_dispositivo/apagar/<id>")
+
+# Rota /configuracao/remover_dispositivo/apagar/ da ferramenta (apaga de fato o dispositivo)
+@app.route("/dispositivos/remover_dispositivo/apagar/", defaults={'id': None}, methods=["GET", "DELETE"])
+@app.route("/dispositivos/remover_dispositivo/apagar/<id>")
 def apagar_dispositivo(id):
-    if current_user.is_authenticated:
-        dispositivo = Device.query.filter_by(id=int(id)).first()
-        if id != None or id != "":
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        dispositivo = Device.query.filter_by(id=int(id)).first() # faz um select no banco
+        if id != None or id != "": # verifica se o id não é None ou vazio:
+            # Deleta o dispositivo do banco e faz commit 
             db.session.delete(dispositivo)
             db.session.commit()
+            # retona seus links seja ele como fonte ou como destino
             l1 = Link.query.filter_by(dpid_src=dispositivo.dpid).all()
             l2 = Link.query.filter_by(dpid_dst=dispositivo.dpid).all()
 
+            # Verifica se a quantidade de link é maior que 0 e deleta os links
             if len(l1) > 0:
                 for link in l1:
                     db.session.delete(link)
@@ -166,128 +194,144 @@ def apagar_dispositivo(id):
                 for link in l2:
                     db.session.delete(link)
                     db.session.commit()
-
-            flash("Device deleted.")
-            return redirect(url_for("remover_dispositivo"))
+            flash("Device deleted.") # mensagem de sucesso
+            return redirect(url_for("remover_dispositivo")) # redirecionamento para a página remover_dispositivo
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
-@app.route("/configuracao/apagar_host_docker/apagar/", defaults={'id': None}, methods=["GET", "DELETE"])
-@app.route("/configuracao/apagar_host_docker/apagar/<id>")
+# Rota /dispositivos/apagar_host_docker/apagar da ferramenta (Apagar host docker)
+@app.route("/dispositivos/apagar_host_docker/apagar/", defaults={'id': None}, methods=["GET", "DELETE"])
+@app.route("/dispositivos/apagar_host_docker/apagar/<id>")
 def apagar_host_docker(id):
-    if current_user.is_authenticated:
-        host = HostDocker.query.filter_by(id=int(id)).first()
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        host = HostDocker.query.filter_by(id=int(id)).first() # select no banco de dados
+        # Verifica se o id é válido
         if id != None or id != "":
+            # deleta o host docker e faz commit
             db.session.delete(host)
             db.session.commit()
-            flash("Host Docker deleted.")
-            return redirect(url_for("remover_dispositivo"))
+            flash("Host Docker deleted.") # mensagem de sucesso
+            return redirect(url_for("remover_dispositivo")) # redirecionamento para remover_dispositivo
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /configuracao da ferramenta
 @app.route("/configuracao")
 def configuracao():
-    if current_user.is_authenticated:
-        resources = Resource.query.all()
-        return render_template("configuracao/index.html",resources=resources)
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        resources = Resource.query.all() # retorna a lista de recursos cadastrado no banco
+        return render_template("configuracao/index.html",resources=resources) # renderiza a página
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /configuracao/add_recurso da ferramenta
 @app.route("/configuracao/add_recurso", methods=['GET', 'POST'])
 def add_recursos():
     form = RecursoForm()
-    if current_user.is_authenticated:
-        if form.validate_on_submit():
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        if form.validate_on_submit(): # verifica se o usuario submeteu o form
             try:
-                i = Resource(form.name.data, form.url.data, form.pid.data)
+                i = Resource(form.name.data, form.url.data, form.pid.data) # cria um objeto passando seus valores
+                # adiciona no banco e faz commit
                 db.session.add(i)
                 db.session.commit()
-                flash("added successfully")
+                flash("added successfully") # mensagem de sucesso
             except IntegrityError:
+                # Caso dê o erro relacionado a integridade, é retornado essa mensagem de erro
                 flash("PID duplicate, no inserted.")
-        return render_template("configuracao/add_recurso.html", form=form)
-    else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
 
+        return render_template("configuracao/add_recurso.html", form=form) # renderiza a página
+    else:
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
+
+
+# Rota /configuracao/recurso/apagar da ferramenta
 @app.route("/configuracao/recurso/apagar/", defaults={'id': None}, methods=["GET", "DELETE"])
 @app.route("/configuracao/recurso/apagar/<id>")
 def apagar_recurso(id):
-    if current_user.is_authenticated:
-        resource = Resource.query.filter_by(id=int(id)).first()
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        resource = Resource.query.filter_by(id=int(id)).first() # Retorna um recurso pelo id
+        # Verifica se o id é diferente de None
         if id != None or id != "":
+            # remove e faz commit
             db.session.delete(resource)
             db.session.commit()
-            flash("Resource deleted.")
-        return redirect("configuracao")
+            flash("Resource deleted.") # mensagem de sucesso
+        return redirect(url_for("configuracao")) # redireciona a página configuracao 
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /configuracao/edit/ da ferramenta
 @app.route("/configuracao/edit/", defaults={'id': None})
 @app.route("/configuracao/edit/<id>", methods=['GET', 'POST'])
 def edit_recurso(id):
-    if current_user.is_authenticated:
-        form = RecursoForm()
-        resource = Resource.query.filter_by(id=int(id)).first()
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        form = RecursoForm() # Intancia de um objeto de form para criar o formulario
+        resource = Resource.query.filter_by(id=int(id)).first() # retorna o recurso de acordo com o ID
+        # Verifica se o id é diferente de None
         if id != None or id != "":
-            if form.validate_on_submit():
+            if form.validate_on_submit(): # verifica se o usuário submeteu o form
+                # Faz o update das informações
                 resource.name = form.name.data
                 resource.url = form.url.data
                 resource.pid = form.pid.data
                 try:
+                    # adiciona o recurso (update) no banco e faz commit
                     db.session.add(resource)
                     db.session.commit()
-                    flash("Resource updated.")
+                    flash("Resource updated.") # mensagem de sucesso
+                    return redirect(url_for("configuracao"))
                 except IntegrityError:
+                    # em caso de erro (PID duplicado) retorna uma mensagem de erro 
                     flash("PID duplicate, no inserted.")
 
-            return render_template("configuracao/edit_config.html", form=form, resource=resource)
+            return render_template("configuracao/edit_config.html", 
+                                    form=form, resource=resource) # renderiza a página 
         else:
-            return redirect("configuracao")
+            return redirect(url_for("configuracao"))
     else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
+        flash("Restricted area for registered users.") # # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
-@app.route("/configuracao/recursos")
-def configuracao_recursos():
-    if current_user.is_authenticated:
-        return render_template("configuracao/edit_config.html")
-    else:
-        flash("Restricted area for registered users.")
-        return redirect(url_for("index"))
-
-
+# Rota /firewall da ferramenta
 @app.route("/firewall")
 def firewall():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated: # verifica a autenticação do usuario
         enable = False
         rules = []
         try:
+            # obter os status de todos os switches
             denied = requests.get("http://localhost:8080/firewall/module/status")
+            # verifica o status da requisição
             if denied.status_code == 200:
                 count = 0
                 for switch in json.loads(denied.text): 
                     if switch["status"] == 'disable':
+                        # conta a quantidade de switches desabilitados
                         count += 1
                 if count == 0:
+                    # se a quantidade de switches for igual a zero, habilita o botão na página
                     enable = True
-            
+            # obter todas as regras
             r = requests.get("http://localhost:8080/firewall/rules/all")
             
             if r.status_code == 200:
                 for rule in json.loads(r.text):
+                    # adiciona por padrão o valor any nas variaveis a seguir (caso não exista)
                     src, dst, proto = "any","any","any"
                     if len(rule['access_control_list']) != 0:
                         for r in rule['access_control_list'][0]['rules']:
+                            # verifica a existencia das variaveis na resposta da requisição
                             try:
                                 src = r['nw_src']
                             except KeyError:
@@ -302,13 +346,14 @@ def firewall():
                                 proto = r['nw_proto']
                             except KeyError:
                                 pass
-                            
+                            # Cria o objeto
                             rf = RegrasFirewall(rule['switch_id'],
                                             r['rule_id'],
                                             src,
                                             dst,
                                             proto,
                                             r['actions'])
+                            # adiciona em um vetor para facilitar a renderização 
                             rules.append(rf)
 
         except ConnectionError:
@@ -319,78 +364,92 @@ def firewall():
         return redirect(url_for("index"))
 
 
+# Rota/firewall/add_regras da ferramenta
 @app.route("/firewall/add_regras", methods=['GET', 'POST'])
 def add_regras_firewall():
-    if current_user.is_authenticated:
-        form = AddRegrasForm()
-        if form.validate_on_submit():
-            dpid = form.dpid.data
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        form = AddRegrasForm() # objeto do tipo formulario
+        if form.validate_on_submit(): # verifica se o usuário submeteu o form
+            dpid = form.dpid.data # pega o dpid que o usuario informou no form
+            # Objeto para facilitar a aplicação das regras
             pay = applyRegras(form.src.data, form.prefix_src.data, form.dst.data, 
                               form.prefix_dst.data, form.proto.data, form.action.data)
-            
+            # adiciona a entrada no switch via rest api do controlador
             put = requests.post("http://localhost:8080/firewall/rules/%s" %(dpid), data = json.dumps(pay))
-            if put.status_code == 200:
-                flash("Rule added.")
-                return redirect("firewall")
+            if put.status_code == 200: # verifica o codigo de resposta
+                flash("Rule added.") # mensagem de sucesso
+                return redirect(url_for("firewall")) # redirecionamento para a pagina firewall
             else:
+                # em caso de erro retorna uma mensagem de erro
                 flash("An error has occurred. Rule not added.")
-
+        # Renderização da pagina com o form instanciado anteriormente
         return render_template("firewall/add_regras.html", form=form)
 
     else:
+        # falha de autenticação
         flash("Restricted area for registered users.")
         return redirect(url_for("index"))
 
 
+# Rota /firewall/apagar da ferramenta
 @app.route("/firewall/apagar/", defaults={'id': None, 'dpid':None}, methods=["GET", "DELETE"])
 @app.route("/firewall/apagar/<id>/<dpid>")
 def apagar_regra_firewall(id, dpid):
-    if current_user.is_authenticated:
+    if current_user.is_authenticated: # verifica a autenticação do usuario
         try:
+            # deleta a regra de acordo com o id e o dpid do switch
             r = requests.delete("http://localhost:8080/firewall/rules/%s" %(dpid) ,data = json.dumps({"rule_id":str(id)}))
-            if r.status_code == 200:
-                flash("Rule successfully deleted.")
+            if r.status_code == 200: # verifica o codigo de resposta
+                flash("Rule successfully deleted.") # mensagem de sucesso
             else:
-                flash("There was an error deleting rule.")
+                flash("There was an error deleting rule.") # mensagem de erro
         except ConnectionError:
-            flash("the connection failed.")
-        
+            flash("the connection failed.") # falha na conexão com o switch
+        # redirecionamento para a página firewall
         return redirect(url_for('firewall'))
     else:
+        # falha de autenticação
         flash("Restricted area for registered users.")
         return redirect(url_for("index"))
 
 
 
-
-
+# Rota /firewall/habilitar da ferramenta
 @app.route("/firewall/habilitar")
 def habilitar_firewall():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated: # verifica a autenticação do usuario
         try:
+            # Obtem o status de todos os switches
             r = requests.get("http://localhost:8080/firewall/module/status")
-            if r.status_code == 200:
+            if r.status_code == 200: # verifica o codigo de resposta
                 device = json.loads(r.text)
                 for switch in device:
+                    # atualiza as informações no switche
                     resp = requests.put("http://localhost:8080/firewall/module/enable/%s" %switch["switch_id"])
 
         except ConnectionError:
+            # falha de conexão
             flash("the connection failed.")
+        # redirecionamento para a página firewall
         return redirect(url_for("firewall"))
     else:
+        # falha de autenticação
         flash("Restricted area for registered users.")
         return redirect(url_for("index"))
 
+
+# Rota /qos da ferramenta
 @app.route("/qos")
 def qos():
     if current_user.is_authenticated:
         cont = 0
         rules_obj = []
         try:
+            # Obtem todos os switches
             switches = requests.get("http://localhost:8080/v1.0/conf/switches")
             if switches.status_code == 200:
                 cont = len(json.loads(switches.text))
-
+            # Obtem todas as regras
             rules = requests.get("http://localhost:8080/qos/rules/all")
             if rules.status_code == 200:
                 for rule in json.loads(rules.text):
@@ -632,17 +691,20 @@ def add_qos_regras():
 def qos_docker_list():
     if current_user.is_authenticated:
         rules = []
-        hosts = HostDocker.query.all()
-        for host in hosts:
-            r = requests.get("http://%s:5000/qos/rules" %host.ip)
-            if r.status_code == 200:
-                resp = json.loads(r.text)
-                for v in resp:
-                    rule = RulesVeth(v,resp[v]['IP'], resp[v]['ID'],resp[v]['rule']['rate'],
-                                     resp[v]['rule']['burst'], resp[v]['rule']['latency'],
-                                     resp[v]['rule']['peak'],resp[v]['rule']['minburst'],
-                                     host.ip)
-                    rules.append(rule)
+        try:
+            hosts = HostDocker.query.all()
+            for host in hosts:
+                r = requests.get("http://%s:5000/qos/rules" %host.ip)
+                if r.status_code == 200:
+                    resp = json.loads(r.text)
+                    for v in resp:
+                        rule = RulesVeth(v,resp[v]['IP'], resp[v]['ID'],resp[v]['rule']['rate'],
+                                        resp[v]['rule']['burst'], resp[v]['rule']['latency'],
+                                        resp[v]['rule']['peak'],resp[v]['rule']['minburst'],
+                                        host.ip)
+                        rules.append(rule)
+        except ConnectionError:
+            flash("connection error")
 
         return render_template("qos/docker_qos_list.html",rules=rules)
 
@@ -732,7 +794,7 @@ def pesquisar_veth():
                         v = Veths(resp[c][0]["IP"],resp[c][0]["veth"])
                         veths.append(v)
                 else:
-                    print "deu merda"
+                    pass
         except ConnectionError:
             flash("Error while trying to connect to host.")
         return render_template("qos/veths.html", form=form, pesquisa=pesquisa,
