@@ -1,1 +1,0 @@
-CREATE USER 'beaver_user'@'localhost' IDENTIFIED BY 'JNFBEEzXp397'; -u root -p
