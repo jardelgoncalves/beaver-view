@@ -20,5 +20,22 @@ pip install -r requeriments.txt
 - **OBS:** Caso durante a instalação apareça esse erro:`Failed building wheel for cryptography`
 execute o comando a seguir para corrigir:`apt-get install build-essential libssl-dev libffi-dev python-dev` e execute o comando para instalar as dependências novamente.
 
+- Agora execute o script de instalação `install.sh` da seguinte fotma:
+```
+bash install.sh -p <senha do usuario root do mysql>
+```
+-Vale ressaltar que esse script utilzia outros arquivos que podem ser encontrado no diretorio `sql/` para configurar a ferramenta, caso aconteça algum problema durante a execução do script, possivelmente será necessário o usuário  apagar o banco e o usuario, no entanto, disponibilizamos outro script dentro do diretório citado anteriormente chamado de `delete_config.sh` que deve ser executado da mesma forma 
+```
+bash delete_config.sh -p <senha do usuario root mysql>
+```
 
-
+- Feito isso, basta executar a ferramenta:
+```
+python run.py runserver --host=0.0.0.0
+```
+- Agora abra o browser e acesse a URL `http://<ip_do host>:5000`
+- As credenciais são:
+```
+email = admin@beaver.com
+senha = admin123
+```
