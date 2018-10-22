@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from app import db
+import datetime
 
 
 class User(db.Model):
@@ -125,3 +126,26 @@ class HostDocker(db.Model):
 
     def __repr__(self):
         return "<Host Docker %r>" % self.name
+
+class Stats(db.Model):
+    __tablename__ = "stats"
+    id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
+    ip_dpid = db.Column('ip_dpid', db.String(50))
+    rx = db.Column('rx', db.Integer)
+    tx = db.Column('tx', db.Integer)
+    last_rx = db.Column('last_rx', db.Integer)
+    last_tx = db.Column('last_tx', db.Integer)
+    date = db.Column('date', db.DateTime, default=datetime.datetime.now())
+
+    def __init__(self, ip_dpid, rx, tx, last_rx, last_tx):
+        self.ip_dpid = ip_dpid
+        self.rx = rx
+        self.tx = tx
+        self.last_rx = last_rx
+        self.last_tx = last_tx
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def __repr__(self):
+        return "<Device %r>" % self.ip_dpid

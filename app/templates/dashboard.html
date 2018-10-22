@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block refresh %}
-<meta http-equiv="refresh" content="60;">
+<meta http-equiv="refresh" content="30;">
 {% endblock %}
 {% block content %}
 
@@ -8,16 +8,13 @@
     <div class="section">
         <div class="row">
             <div class="col s12">
-
+                {% for data in datas %}
                 <div class="card-panel">
-                    <h4><span class="brown-text">Gráfico 1</span></h4>
-                    <canvas id="myChart1" width="50" height="20"></canvas>
+                    <h4><span class="brown-text">Gŕafico de {{data}}</span></h4>
+                    <canvas id="{{data}}" width="50" height="20"></canvas>
                 </div>
+                {% endfor %}
 
-                <div class="card-panel">
-                    <h4><span class="brown-text">Gráfico 2</span></h4>
-                    <canvas id="myChart2" width="50" height="20"></canvas>
-                </div>
             </div>
         </div>
     </div>
@@ -26,16 +23,16 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 
+{% for data in datas %}
+
 <script>
-    var ctx = document.getElementById("myChart1");
+    var ctx = document.getElementById("{{data}}");
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: ["1 min", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
             datasets: [{
-                    data: [15339, 21345, 18483, 24003, 23489, 24092, 12034, 13239, 11145, 12483, 20003,
-                        12489, 11092, 10034, 13239
-                    ],
+                    data: {{ datas[data]['RX']}},
                     lineTension: 0,
                     backgroundColor: 'transparent',
                     borderColor: '#79c956',
@@ -44,9 +41,7 @@
                     label: "RX"
                 },
                 {
-                    data: [13239, 11145, 12483, 20003, 12489, 11092, 10034, 15339, 21345, 18483, 24003,
-                        23489, 24092, 12034, 12489
-                    ],
+                    data: {{ datas[data]['TX']}},
                     lineTension: 0,
                     backgroundColor: 'transparent',
                     borderColor: '#4eb4e0',
@@ -70,50 +65,6 @@
         }
     });
 </script>
-
-<script>
-    var ctx = document.getElementById("myChart2");
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
-            datasets: [{
-                    data: [15339, 21345, 18483, 24003, 23489, 24092, 12034, 13239, 11145, 12483, 20003,
-                        12489, 11092, 10034, 13239
-                    ],
-                    lineTension: 0,
-                    backgroundColor: 'transparent',
-                    borderColor: '#79c956',
-                    borderWidth: 4,
-                    pointBackgroundColor: '#79c956',
-                    label: "RX"
-                },
-                {
-                    data: [13239, 11145, 12483, 20003, 12489, 11092, 10034, 15339, 21345, 18483, 24003,
-                        23489, 24092, 12034, 12489
-                    ],
-                    lineTension: 0,
-                    backgroundColor: 'transparent',
-                    borderColor: '#4eb4e0',
-                    borderWidth: 4,
-                    pointBackgroundColor: '#4eb4e0',
-                    label: "TX"
-                }
-            ]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
-                }]
-            },
-            legend: {
-                display: true,
-            }
-        }
-    });
-</script>
+{% endfor %}
 
 {% endblock %}

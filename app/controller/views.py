@@ -7,10 +7,11 @@ from flask import render_template, url_for, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 
 # Importando as libs de fomurlario
-from app.models.tables import User, DeviceTypes, Device, Link, Resource, HostDocker
+from app.models.tables import User, DeviceTypes, Device, Link, Resource, HostDocker, Stats
 from app.models.forms import LoginForm, TipoForm, RecursoForm, HostDockerForm, AddRegrasForm
 from app.models.forms import ConfigOVSDBForm, ConfigQoSForm, UpdateQueueForm, RegrasQoSForm
 from app.models.forms import QoSHostDockerForm, PesquisarVethForm
+from sqlalchemy import desc
 
 # usado no uploads de arquivos
 from werkzeug.utils import secure_filename
@@ -54,8 +55,17 @@ def index():
 @app.route("/dashboard")
 def dashboard():
     if current_user.is_authenticated: # verifica a autenticação do usuario
-        vet = [1,2,23,65,75,32,11]
-        return render_template("dashboard.html", vet=vet) # renderização da página dashboard
+        datas = {}
+        vet=[1212,12123]
+        switches = Device.query.all()
+        for sw in switches:
+            datas[sw.dpid]={"RX":[],"TX":[]}
+            data = Stats.query.filter_by(ip_dpid=sw.dpid).order_by(desc(Stats.date)).limit(15).all()
+            for d in data:
+                datas[sw.dpid]["RX"].append(d.rx)
+                datas[sw.dpid]["TX"].append(d.tx)
+        print datas
+        return render_template("dashboard.html", datas=datas) # renderização da página dashboard
     else:
         flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
         return redirect(url_for("index")) # redirecionamento a página index (login)
@@ -677,9 +687,9 @@ def add_qos_regras():
 
             r = requests.post("http://localhost:8080/qos/rules/%s" %form.dpid.data, data=json.dumps(match))
             if r.status_code == 200:
-                print "show"
+                flash("Rule added.")
             else:
-                print "não"
+                flash("Rule not added.")
 
         return render_template("qos/add_regras.html", form=form)
     else:
