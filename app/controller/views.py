@@ -105,6 +105,39 @@ def dispositivos():
         return redirect(url_for("index")) # redirecionamento a página index (login)
 
 
+# Rota /dispositivo/ver_tipos da ferramenta
+@app.route("/dispositivos/ver_tipos")
+def ver_tipos():
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        types = DeviceTypes.query.all() # retorna todos os tipos de dispositivos cadastrado no banco de dados
+        return render_template("dispositivos/ver_tipos.html",types=types)
+    else:
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
+
+
+@app.route("/dispositivos/ver_tipos/apagar/", defaults={'id': None}, methods=["GET", "DELETE"])
+@app.route("/dispositivos/ver_tipos/apagar/<id>")
+def apagar_tipo(id):
+    if current_user.is_authenticated: # verifica a autenticação do usuario
+        tps = DeviceTypes.query.filter_by(id=int(id)).first() # faz um select no banco
+        if id != None or id != "": # verifica se o id não é None ou vazio:
+            # Deleta o dispositivo do banco e faz commit
+            photo = os.path.join(
+                      os.getcwd(), 'app/static/img/components', str(tps.filename)
+                    )
+            db.session.delete(tps)
+            db.session.commit()
+            os.remove(photo)
+            flash("Device Type deleted.")
+            return redirect(url_for("ver_tipos"))
+        else:
+            flash("Device type not deleted.")
+            return redirect(url_for("ver_tipos"))
+    else:
+        flash("Restricted area for registered users.") # mensagem de erro caso falhe na autenticaçao
+        return redirect(url_for("index")) # redirecionamento a página index (login)
+
 # Rota /dispositivo/adicionar_tipo da ferramenta (Adicionar tipo de dispositivo)
 @app.route("/dispositivos/adicionar_tipo", methods=['GET', 'POST'])
 def adicionar_tipo(): 
@@ -129,6 +162,7 @@ def adicionar_tipo():
                     os.getcwd(), 'app/static/img/components', filename
                 ))
                 flash("added successfully")    # Mensagem de sucesso
+                return redirect(url_for("ver_tipos"))
             except IntegrityError:
                 flash("This TYPE OF DEVICE already exists.")
 
