@@ -4,7 +4,7 @@ Pendências
 ==========
 Instalar `git`, `mysql`, `pip` e outras libs importantes:
 ```
-a pt update && apt install git python-pip mysql-server build-essential libssl-dev libffi-dev python-dev -y
+apt update && apt install git python-pip mysql-server build-essential libssl-dev libffi-dev python-dev -y
 ```
 Instalação da Ferramenta
 ==========
