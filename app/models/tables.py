@@ -91,12 +91,10 @@ class Resource(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     name = db.Column('name', db.String(50))
     url = db.Column('url', db.String(200))
-    pid = db.Column('pid', db.Integer, unique=True)
 
-    def __init__(self, name,url,pid):
+    def __init__(self, name,url):
         self.name = name
         self.url = url
-        self.pid = pid
 
     def get_id(self):
         return unicode(self.id)

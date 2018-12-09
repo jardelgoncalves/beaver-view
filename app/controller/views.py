@@ -281,7 +281,7 @@ def add_recursos():
     if current_user.is_authenticated: # verifica a autenticação do usuario
         if form.validate_on_submit(): # verifica se o usuario submeteu o form
             try:
-                i = Resource(form.name.data, form.url.data, form.pid.data) # cria um objeto passando seus valores
+                i = Resource(form.name.data, form.url.data) # cria um objeto passando seus valores
                 # adiciona no banco e faz commit
                 db.session.add(i)
                 db.session.commit()
@@ -327,7 +327,6 @@ def edit_recurso(id):
                 # Faz o update das informações
                 resource.name = form.name.data
                 resource.url = form.url.data
-                resource.pid = form.pid.data
                 try:
                     # adiciona o recurso (update) no banco e faz commit
                     db.session.add(resource)
@@ -351,6 +350,8 @@ def edit_recurso(id):
 @app.route("/firewall")
 def firewall():
     if current_user.is_authenticated: # verifica a autenticação do usuario
+        color="green"
+
         enable = False
         rules = []
         try:
@@ -401,8 +402,9 @@ def firewall():
                             rules.append(rf)
 
         except ConnectionError:
-            flash("the connection failed.")
-        return render_template("firewall/index.html", enable=enable, rules=rules)
+            flash("Connection to Firewall application failed.")
+            color="red"
+        return render_template("firewall/index.html", enable=enable, rules=rules, color=color)
     else:
         flash("Restricted area for registered users.")
         return redirect(url_for("index"))
@@ -744,7 +746,7 @@ def qos_docker_list():
                     for v in resp:
                         rule = RulesVeth(v,resp[v]['IP'], resp[v]['ID'],resp[v]['rule']['rate'],
                                         resp[v]['rule']['burst'], resp[v]['rule']['latency'],
-                                        resp[v]['rule']['peak'],resp[v]['rule']['minburst'],
+                                        resp[v]['rule']['peak'], resp[v]['rule']['minburst'],
                                         host.ip)
                         rules.append(rule)
         except ConnectionError:

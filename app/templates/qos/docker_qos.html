@@ -6,7 +6,7 @@
         <ul class="left hide-on-med-and-down">
             <li><a href="{{ url_for('qos_config')}}">Configurar Filas</a></li>
             <li><a href="{{url_for('add_qos_regras')}}">Adicionar Regras</a></li>
-            <li><a href="{{url_for('qos_docker_list')}}">QoS Host Docker</a></li>
+            <li class="active"><a href="{{url_for('qos_docker_list')}}">QoS Host Docker</a></li>
             <li><a href="{{ url_for('qos_ovsdb')}}">OVSDB</a></li>
         </ul>
     </div>
@@ -74,7 +74,7 @@
                         </div>
                         <div class="input-field col s6">
                             {{ form.peakrate }}
-                            <label for="nome">Peak rate (kbit)</label>
+                            <label for="nome">Peakrate (kbit)</label>
                         </div>
 
                     </div>
@@ -82,7 +82,7 @@
                     <div class="row">
                         <div class="input-field col s6">
                             {{ form.minburst }}
-                            <label for="nome">Minburst (b)</label>
+                            <label for="nome">Minburst (bytes)</label>
                         </div>
 
                     </div>

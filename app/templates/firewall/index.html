@@ -16,12 +16,12 @@
     <div class="section">
         <div class="row">
             <!-- Inicio de mensagens de sucesso -->
-            <div class="card-panel green lighten-4 col s6 offset-s3">
+            <div class="card-panel {{color}} lighten-4 col s6 offset-s3">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 <ul class=flashes>
                     {% for message in messages %}
-                    <li><span class="green-text text-darken-4">{{ message }}</span></li>
+                    <li><span class="{{color}}-text text-darken-4">{{ message }}</span></li>
                     {% endfor %}
                 </ul>
                 {% endif %}

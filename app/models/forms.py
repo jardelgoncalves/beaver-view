@@ -16,7 +16,6 @@ class TipoForm(FlaskForm):
 class RecursoForm(FlaskForm):
     name = StringField("name", validators=[InputRequired()])
     url = StringField("url", validators=[InputRequired()])
-    pid = IntegerField("pid", validators=[InputRequired()])
 
 class HostDockerForm(FlaskForm):
     name = StringField("name", validators=[InputRequired()])

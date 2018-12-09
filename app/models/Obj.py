@@ -78,7 +78,7 @@ class RulesVeth:
         self.ip         = ip
         self.id         = id
         self.rate       = rate
-        self.burst      = burst
+        self.burst      = "%iKb"%(int(burst.split("K")[0]) * 8)
         self.latency    = latency
         self.peakrate   = peakrate
         self.minburst   = minburst

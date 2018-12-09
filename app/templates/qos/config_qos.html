@@ -4,7 +4,7 @@
 <nav>
     <div class="nav-wrapper brown darken-1">
         <ul class="left hide-on-med-and-down">
-            <li><a href="{{ url_for('qos_config')}}">Configurar Filas</a></li>
+            <li class="active"><a href="{{ url_for('qos_config')}}">Configurar Filas</a></li>
             <li><a href="{{url_for('add_qos_regras')}}">Adicionar Regras</a></li>
             <li><a href="{{url_for('qos_docker_list')}}">QoS Host Docker</a></li>
             <li><a href="{{ url_for('qos_ovsdb')}}">OVSDB</a></li>
@@ -40,7 +40,7 @@
                 <div class="col s12">
                     <div class="card">
                         <div class="card-content">
-                            <span class="card-title center brown-text"><strong>Switches Configurados</strong></span>
+                            <span class="card-title center brown-text"><strong>Configurações</strong></span>
                             <table>
                                 <thead>
                                     <tr>
